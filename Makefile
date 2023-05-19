@@ -33,5 +33,5 @@ $(COLLISIONS): $(COLLISIONS_OBJS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean_test:
+clean_collisions:
 	del -f $(COLLISIONS_OBJS) $(COLLISIONS).exe
