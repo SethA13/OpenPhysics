@@ -45,7 +45,7 @@ clean_all: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS)
 #####################################
 # for making the glut test file
 #####################################
-glutTest: $(GLUTTEST)
+glut: $(GLUTTEST)
 
 $(GLUTTEST): $(GLUTTEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
