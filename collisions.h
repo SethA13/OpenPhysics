@@ -1,3 +1,6 @@
+#ifndef COLLISIONS_H
+#define COLLISIONS_H
+
 #include <stdio.h>
 
 
@@ -20,7 +23,7 @@ bool rectangleToPointCollision(char *);
 bool pointToPointCollision(char *);
 
 // sat Theorem for collisions not between these 3
-bool satTheorem();
+bool satTheorem(char *);
 
 
 
@@ -57,6 +60,10 @@ bool isColliding(char *objects)
     {
         return rectangleToPointCollision(objects);
     }
+
+    // Handle extraneous case
+    else
+        return satTheorem(objects);
 }
 
 
@@ -96,7 +103,9 @@ bool pointToPointCollision(char *objects)
 /******************************
 ******************************/
 
-bool satTheorem()
+bool satTheorem(char *objects)
 {
     return 0;
 }
+
+#endif
