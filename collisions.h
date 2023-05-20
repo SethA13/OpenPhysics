@@ -8,7 +8,7 @@
  * PROTOTYPES
 ****************/
 // collision detection
-bool isColliding(char *); // probably not needed
+bool isColliding(char *);
 
 // circle formulas
 bool circleToCircleCollision(char *);
@@ -27,7 +27,7 @@ bool satTheorem(char *);
 
 
 
-// check if colliding
+// check if two objects are colliding
 // TODO: find more elegant solution than if statements
 bool isColliding(char *objects)
 {
@@ -108,4 +108,4 @@ bool satTheorem(char *objects)
     return 0;
 }
 
-#endif
+#endif // COLLISIONS_H
