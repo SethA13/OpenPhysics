@@ -16,6 +16,7 @@ public:
     char getShape();
     // setter
     float setRadius();
+    char setShape();
     // constructors
 
     object(float radius, char objectShape) : radius(0.0), objectShape('n') {}
@@ -24,4 +25,4 @@ public:
     ~object();
 };
 
-#endif
+#endif // OBJECT_H
