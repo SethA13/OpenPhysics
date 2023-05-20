@@ -36,11 +36,11 @@ bool isColliding(char *objects)
     {
        return circleToCircleCollision(objects);
     }
-    else if ((objects[1] == 'c') && objects[2] == 'r')
+    else if (((objects[1] == 'c') && objects[2] == 'r') || ((objects[1] == 'r') && objects[2] == 'c'))
     {
         return circleToRectangleCollision(objects);
     }
-    else if ((objects[1] == 'c') && objects[2] == 'p')
+    else if (((objects[1] == 'c') && objects[2] == 'p') || ((objects[1] == 'p') && objects[2] == 'c'))
     {
         return circleToPointCollision(objects);
     }
@@ -50,15 +50,15 @@ bool isColliding(char *objects)
     {
         return rectangleToRectangleCollision(objects);
     }
-    else if ((objects[1] == 'r') && objects[2] == 'p')
+    else if (((objects[1] == 'r') && objects[2] == 'p') || ((objects[1] == 'p') && objects[2] == 'r'))
     {
         return rectangleToPointCollision(objects);
     }
 
     // Check point case
-    else if ((objects[1] == 'r') && objects[2] == 'p')
+    else if ((objects[1] == 'p') && objects[2] == 'p')
     {
-        return rectangleToPointCollision(objects);
+        return pointToPointCollision(objects);
     }
 
     // Handle extraneous case
@@ -73,7 +73,7 @@ bool isColliding(char *objects)
 *******************************/
 bool circleToCircleCollision(char *objects)
 {
-    return false;
+    return 0;
 }
 
 bool circleToRectangleCollision(char *objects)
