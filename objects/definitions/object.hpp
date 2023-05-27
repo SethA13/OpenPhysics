@@ -1,7 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "point.h"
+#include "point.hpp"
 /**********************************************
  * OBJECT
  * The base class that all shapes inherit from.  

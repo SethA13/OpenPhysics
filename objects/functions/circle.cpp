@@ -1,4 +1,4 @@
-#include "../definitions/circle.h"
+#include "../definitions/circle.hpp"
 
 /**********************
  * Constructors

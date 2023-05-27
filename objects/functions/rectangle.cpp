@@ -1,4 +1,4 @@
-#include "../definitions/rectangle.h"
+#include "../definitions/rectangle.hpp"
 
 /**********************
  * Constructors

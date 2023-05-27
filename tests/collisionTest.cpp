@@ -1,4 +1,4 @@
-#include "../collisions.h"
+#include "../collisions.hpp"
 #include <iostream>
 
 int main() 

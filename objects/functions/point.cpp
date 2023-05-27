@@ -1,4 +1,4 @@
-#include "../definitions/point.h"
+#include "../definitions/point.hpp"
 
 /**********************
  * Constructors
