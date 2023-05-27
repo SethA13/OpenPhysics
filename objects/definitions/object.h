@@ -1,28 +1,27 @@
 #ifndef OBJECT_H
 #define OBJECT_H
+
+#include "point.h"
 /**********************************************
  * OBJECT
  * The base class that all shapes inherit from.  
  **********************************************/
-class object
+class Object
 {
 private:
-    float radius;
-    char objectShape;
+    Point centerPoint;
 
 public:
     // getter
-    float getRadius();
-    char getShape();
+    Point getCenterPoint();
     // setter
-    float setRadius();
-    char setShape();
+    Point setCenterPoint();
     // constructors
 
-    object(float radius, char objectShape) : radius(0.0), objectShape('n') {}
+    Object(Point centerPoint) : centerPoint(0.0, 0.0) {}
 
     // destructor
-    ~object();
+    ~Object();
 };
 
 #endif // OBJECT_H

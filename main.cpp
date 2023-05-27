@@ -1,5 +1,4 @@
-#include <GL/glut.h>
-#include "../canvas/canvas.h"
+#include "./canvas/canvas.h"
 
 int main(int argc, char** argv)
 {
