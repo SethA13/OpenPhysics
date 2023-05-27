@@ -1,4 +1,4 @@
-#include "./canvas/canvas.h"
+#include "canvas/display/canvas.hpp"
 
 int main(int argc, char** argv)
 {

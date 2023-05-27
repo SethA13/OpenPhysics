@@ -15,11 +15,16 @@ GLUTTEST_OBJS = $(GLUTTEST_SRCS:.cpp=.o)
 COLLISIONS = collisionTest
 COLLISIONS_SRCS = collisionTest.cpp
 COLLISIONS_OBJS = $(COLLISIONS_SRCS:.cpp=.o)
+
+PLANETS = planetTest
+PLANETS_SRCS = planetTest.cpp
+PLANETS_OBJS = $(PLANETS_SRCS:.cpp=.o)
 ##################################
  # clean declaration prototypes
 ##################################
 CLEAN_GLUTTEST = clean_glutTest
 CLEAN_COLLISIONS = clean_collisions
+CLEAN_PLANETS = clean_planets
 
 
 
@@ -38,9 +43,9 @@ CLEAN_COLLISIONS = clean_collisions
  # 		clean_collisions:
  # 			delete compilation files for collisions 
 #########################################################################
-all: $(GLUTTEST) $(COLLISIONS)
+all: $(GLUTTEST) $(COLLISIONS) $(PLANETS)
 
-clean_all: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS)
+clean_all: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS)
 
 #####################################
 # for making the glut test file
@@ -69,3 +74,17 @@ $(COLLISIONS): $(COLLISIONS_OBJS)
 
 $(CLEAN_COLLISIONS):
 	del -f collisionTest.o $(COLLISIONS).exe
+
+#####################################
+# for making the planets test file
+#####################################
+planets: $(PLANETS)
+
+$(PLANETS): $(PLANETS_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_PLANETS):
+	del -f planetTest.o $(PLANETS).exe
