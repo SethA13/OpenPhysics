@@ -57,7 +57,7 @@ clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS)
 #####################################
 glut: $(GLUTTEST)
 	@echo "glutTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(GLUTTEST).o' -Destination '$(TESTOBJSDIR)\$(GLUTTEST).o'"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(GLUTTEST).o' -Destination '$(TESTOBJSDIR)\$(GLUTTEST).o' -force" 
 
 $(GLUTTEST): $(GLUTTEST_OBJS)
 	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
@@ -73,7 +73,7 @@ $(CLEAN_GLUTTEST):
 #####################################
 collisions: $(COLLISIONS)
 	@echo "collisionTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(COLLISIONS).o' -Destination '$(TESTOBJSDIR)\$(COLLISIONS).o'"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(COLLISIONS).o' -Destination '$(TESTOBJSDIR)\$(COLLISIONS).o' -force" 
 
 $(COLLISIONS): $(COLLISIONS_OBJS)
 	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
@@ -89,7 +89,7 @@ $(CLEAN_COLLISIONS):
 #####################################
 planets: $(PLANETS)
 	@echo "planetTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(PLANETS).o' -Destination '$(TESTOBJSDIR)\$(PLANETS).o'"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(PLANETS).o' -Destination '$(TESTOBJSDIR)\$(PLANETS).o' -force"
 
 $(PLANETS): $(PLANETS_OBJS)
 	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
