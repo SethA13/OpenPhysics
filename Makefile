@@ -35,18 +35,22 @@ CLEAN_PLANETS = clean_planets
 
 #########################################################################
  # 							Task Declarations
- #		all:
- #			compile both the glut test and the collisions test
- #		clean_all:
- #			delete all compiled files
+ #		tests:
+ #			compile all the test files
+ #		clean_tests:
+ #			delete all compiled test files
  #		glutTest:
  #			compile glutTest
  # 		clean_glutTest:
  #			delete compilation files for glutTest
  # 		collisions:
- # 			compile collisions
+ # 			compile collisions test
  # 		clean_collisions:
- # 			delete compilation files for collisions 
+ # 			delete compilation files for collisions test
+ #		planets:
+ #			compile planets test
+ #		clean_planets:
+ #			delete compilation files for planets test
 #########################################################################
 tests: glut collisions planets
 
