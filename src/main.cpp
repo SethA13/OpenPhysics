@@ -1,11 +1,13 @@
-#include <GL/glut.h>
-#include "canvas.hpp"
-
 // Include GLEW
-//#include <GL/glew.h>
+#include <GL/glew.h>
+
+#include "canvas\display\canvas.hpp"
 
 // Include GLFW
 #include <GLFW/glfw3.h>
+
+// Include GLM
+#include "..\dependancies\glm\glm\glm.hpp"
 
 int main(int argc, char** argv)
 {

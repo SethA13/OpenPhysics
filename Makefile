@@ -5,10 +5,10 @@ PROJECTDIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(OS),Windows_NT)
 	CC = g++
-	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm-0.9.7.1
-	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm-0.9.7.1 -Wl,-rpath=$(PROJECTDIR)dependancies/glm-0.9.7.1 -lglm
+	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm
+	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm -Wl,-rpath=$(PROJECTDIR)dependancies/glm -lglm_shared
 
-	SEP = \
+	SEP = \\
 
 else
 	CC = g++
@@ -170,8 +170,9 @@ $(CLEAN_PLANETS):
 ##############################################################
 project: $(PROJECT)
 	@echo "project built!"
+	@echo "$(PROJSRCSDIR)\$(PROJECT).o"
 	ifeq ($(OS),Windows_NT)
-		powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)$(SEP)$(PROJECT).o' -Destination '$(PROJOBJSDIR)$(SEP)$(PROJECT).o' -force"
+		powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)$(PROJECT).o' -Destination '$(PROJOBJSDIR)$(PROJECT).o' -force"
 	else
 		mv $(PROJSRCSDIR)$(SEP)$(PROJECT).o $(TESTOBJSDIR)/$(GLUTTEST).o
 	endif
