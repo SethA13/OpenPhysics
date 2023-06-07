@@ -8,29 +8,33 @@ ifeq ($(OS),Windows_NT)
 	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm-0.9.7.1
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm-0.9.7.1 -Wl,-rpath=$(PROJECTDIR)dependancies/glm-0.9.7.1 -lglm
 
+	SEP = \
+
 else
 	CC = g++
 	CFLAGS = -std=c++11 -Wall -Wextra
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -lglm
+
+	SEP = /
 endif
 
-TESTSRCSDIR = .\tests\src
-TESTOBJSDIR = .\tests\bin\objs
-TESTBINDIR = .\tests\bin
+TESTSRCSDIR = .$(SEP)tests$(SEP)src
+TESTOBJSDIR = .$(SEP)tests$(SEP)bin$(SEP)objs
+TESTBINDIR = .$(SEP)tests$(SEP)bin
 ##################################
  # test declaration prototypes
 ##################################
 GLUTTEST = glutTest
-GLUTTEST_SRCS = $(TESTSRCSDIR)\glutTest.cpp
-GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GLUTTEST_SRCS:.cpp=.o))
+GLUTTEST_SRCS = $(TESTSRCSDIR)$(SEP)glutTest.cpp
+GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)$(SEP)%.cpp, $(TESTOBJSDIR)$(SEP)%.o, $(GLUTTEST_SRCS:.cpp=.o))
 
 COLLISIONS = collisionTest
-COLLISIONS_SRCS = $(TESTSRCSDIR)\collisionTest.cpp
-COLLISIONS_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(COLLISIONS_SRCS:.cpp=.o))
+COLLISIONS_SRCS = $(TESTSRCSDIR)$(SEP)collisionTest.cpp
+COLLISIONS_OBJS = $(patsubst $(TESTSRCSDIR)$(SEP)%.cpp, $(TESTOBJSDIR)$(SEP)%.o, $(COLLISIONS_SRCS:.cpp=.o))
 
 PLANETS = planetTest
-PLANETS_SRCS = $(TESTSRCSDIR)\planetTest.cpp
-PLANETS_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(PLANETS_SRCS:.cpp=.o))
+PLANETS_SRCS = $(TESTSRCSDIR)$(SEP)planetTest.cpp
+PLANETS_OBJS = $(patsubst $(TESTSRCSDIR)$(SEP)%.cpp, $(TESTOBJSDIR)$(SEP)%.o, $(PLANETS_SRCS:.cpp=.o))
 #####################################
  # clean test declaration prototypes
 #####################################
@@ -40,15 +44,15 @@ CLEAN_PLANETS = clean_planets
 
 
 
-PROJSRCSDIR = ./src
-PROJOBJSDIR = .\bin\objs
-PROJBINDIR = .\bin
+PROJSRCSDIR = .$(SEP)src
+PROJOBJSDIR = .$(SEP)bin$(SEP)objs
+PROJBINDIR = .$(SEP)bin
 #####################################
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\main.cpp
-PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
+PROJECT_SRCS = $(PROJSRCSDIR)$(SEP)main.cpp
+PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)$(SEP)%.cpp, $(PROJOBJSDIR)$(SEP)%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
 ########################################
@@ -99,61 +103,87 @@ clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS)
 #####################################
 glut: $(GLUTTEST)
 	@echo "glutTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(GLUTTEST).o' -Destination '$(TESTOBJSDIR)\$(GLUTTEST).o' -force" 
+	ifeq ($(OS),Windows_NT)
+		powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)$(SEP)$(GLUTTEST).o' -Destination '$(TESTOBJSDIR)$(SEP)$(GLUTTEST).o' -force"
+	else
+		mv $(TESTSRCSDIR)$(SEP)$(GLUTTEST).o $(TESTOBJSDIR)$(SEP)$(GLUTTEST).o
+	endif
 
 $(GLUTTEST): $(GLUTTEST_OBJS)
-	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)$(SEP)$@ $^ $(LDFLAGS)
 
-$(TESTOBJSDIR)\%.o: $(TESTSRCSDIR)\%.cpp
+$(TESTOBJSDIR)$(SEP)%.o: $(TESTSRCSDIR)$(SEP)%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(CLEAN_GLUTTEST):
-	del /Q $(TESTOBJSDIR)\$(GLUTTEST).o $(TESTBINDIR)\$(GLUTTEST).exe
-
+	ifeq ($(OS),Windows_NT)
+		del /Q $(TESTOBJSDIR)$(SEP)$(GLUTTEST).o $(TESTBINDIR)$(SEP)$(GLUTTEST).exe
+	else
+		rm -f $(TESTOBJSDIR)$(SEP)$(GLUTTEST).o $(TESTBINDIR)$(SEP)$(GLUTTEST)
+	endif
 #####################################
 # for making the collisions test file
 #####################################
 collisions: $(COLLISIONS)
 	@echo "collisionTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(COLLISIONS).o' -Destination '$(TESTOBJSDIR)\$(COLLISIONS).o' -force" 
+	ifeq ($(OS),Windows_NT)
+		powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)$(SEP)$(COLLISIONS).o' -Destination '$(TESTOBJSDIR)$(SEP)$(COLLISIONS).o' -force"
+	else
+
+	endif
 
 $(COLLISIONS): $(COLLISIONS_OBJS)
-	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)$(SEP)$@ $^ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(CLEAN_COLLISIONS):
-	del /Q $(TESTOBJSDIR)\$(COLLISIONS).o $(TESTBINDIR)\$(COLLISIONS).exe
+	ifeq ($(OS),Windows_NT)
+		del /Q $(TESTOBJSDIR)$(SEP)$(COLLISIONS).o $(TESTBINDIR)$(SEP)$(COLLISIONS).exe
+	else
 
+	endif
 #####################################
 # for making the planets test file
 #####################################
 planets: $(PLANETS)
 	@echo "planetTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(PLANETS).o' -Destination '$(TESTOBJSDIR)\$(PLANETS).o' -force"
+	ifeq ($(OS),Windows_NT)
+		powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)$(SEP)$(PLANETS).o' -Destination '$(TESTOBJSDIR)$(SEP)$(PLANETS).o' -force"
+	else
 
+	endif
 $(PLANETS): $(PLANETS_OBJS)
-	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)$(SEP)$@ $^ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(CLEAN_PLANETS):
-	del /Q $(TESTOBJSDIR)\$(PLANETS).o $(TESTBINDIR)\$(PLANETS).exe
+	ifeq ($(OS),Windows_NT)
+		del /Q $(TESTOBJSDIR)$(SEP)$(PLANETS).o $(TESTBINDIR)$(SEP)$(PLANETS).exe
+	else
 
 ##############################################################
 #						Project Files
 ##############################################################
 project: $(PROJECT)
 	@echo "project built!"
-	powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
-
+	ifeq ($(OS),Windows_NT)
+		powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)$(SEP)$(PROJECT).o' -Destination '$(PROJOBJSDIR)$(SEP)$(PROJECT).o' -force"
+	else
+		mv $(PROJSRCSDIR)$(SEP)$(PROJECT).o $(TESTOBJSDIR)/$(GLUTTEST).o
+	endif
 $(PROJECT): $(PROJECT_OBJS)
-	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(PROJBINDIR)$(SEP)$@ $^ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(CLEAN_PROJECT):
-	del /Q $(PROJOBJSDIR)\$(PROJECT).o $(PROJBINDIR)\$(PROJECT).exe
+	ifeq ($(OS),Windows_NT)
+		del /Q $(PROJOBJSDIR)$(SEP)$(PROJECT).o $(PROJBINDIR)$(SEP)$(PROJECT).exe
+	else
+		
+	endif
