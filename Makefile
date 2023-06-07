@@ -1,11 +1,18 @@
 ##################################
  # codecompiler flags
 ##################################
-CC = g++
-CFLAGS = -std=c++11 -Wall -Wextra
-LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32
-
 PROJECTDIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+
+ifeq ($(OS),Windows_NT)
+	CC = g++
+	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm-0.9.7.1
+	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm-0.9.7.1 -Wl,-rpath=$(PROJECTDIR)dependancies/glm-0.9.7.1 -lglm
+
+else
+	CC = g++
+	CFLAGS = -std=c++11 -Wall -Wextra
+	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -lglm
+endif
 
 TESTSRCSDIR = .\tests\src
 TESTOBJSDIR = .\tests\bin\objs
@@ -33,8 +40,31 @@ CLEAN_PLANETS = clean_planets
 
 
 
+PROJSRCSDIR = ./src
+PROJOBJSDIR = .\bin\objs
+PROJBINDIR = .\bin
+#####################################
+ # project declaration prototypes
+#####################################
+PROJECT = main
+PROJECT_SRCS = $(PROJSRCSDIR)\main.cpp
+PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
+########################################
+ # clean project declaration prototypes
+########################################
+CLEAN_PROJECT = clean_project
+
+
 #########################################################################
  # 							Task Declarations
+ #		all:
+ #			compile everything
+ #		clean_all:
+ #			delete all compilation files
+ #		project:
+ #			compile project files
+ #		clean_project:
+ #			delete project compilation files
  #		tests:
  #			compile all the test files
  #		clean_tests:
@@ -52,10 +82,18 @@ CLEAN_PLANETS = clean_planets
  #		clean_planets:
  #			delete compilation files for planets test
 #########################################################################
+all: tests project
+
+clean_all: clean_tests clean_project
+
 tests: glut collisions planets
 
 clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS)
 
+
+##############################################################
+#						Test Files
+##############################################################
 #####################################
 # for making the glut test file
 #####################################
@@ -103,3 +141,19 @@ $(PLANETS): $(PLANETS_OBJS)
 
 $(CLEAN_PLANETS):
 	del /Q $(TESTOBJSDIR)\$(PLANETS).o $(TESTBINDIR)\$(PLANETS).exe
+
+##############################################################
+#						Project Files
+##############################################################
+project: $(PROJECT)
+	@echo "project built!"
+	powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
+
+$(PROJECT): $(PROJECT_OBJS)
+	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_PROJECT):
+	del /Q $(PROJOBJSDIR)\$(PROJECT).o $(PROJBINDIR)\$(PROJECT).exe
