@@ -3,6 +3,7 @@
 *.com
 *.class
 *.dll
+!*libglm_shared.dll
 *.exe
 *.o
 *.so
@@ -38,5 +39,4 @@ Thumbs.db
 
 # Folders #
 ######################
-dependancies
 CmakeFiles

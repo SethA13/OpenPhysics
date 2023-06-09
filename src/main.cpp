@@ -12,10 +12,11 @@
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(1040, 720);
     glutCreateWindow("This window name");
     glClearColor(0.0, 0.0, 0.0, 0.0);
+    glOrtho(0, 1040.0, 720.0, 0, 0, 1); // Orient and define grid
     glutDisplayFunc(display);
     glutMainLoop();
     return 0;
