@@ -1,8 +1,8 @@
 // Include GLEW
 #include <GL/glew.h>
-
 #include "canvas\display\canvas.hpp"
 
+#include <iostream>
 
 // Include GLFW
 #include <GLFW/glfw3.h>
@@ -12,13 +12,30 @@
 
 int main(int argc, char** argv)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE);
-    glutInitWindowSize(1040, 720);
-    glutCreateWindow("This window name");
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glOrtho(0, 1040.0, 720.0, 0, 0, 1); // Orient and define grid
-    glutDisplayFunc(display);
-    glutMainLoop();
-    return 0;
+	int returnCode = 0;
+	char initType[4];
+	std::cout << "Declare 'GLUT' init or 'GLFW' init: ";
+	std::cin >> initType;
+
+	std::cout << "init Type declared: " << initType << std::endl;
+
+	/*********************************************
+	 * Initialize glut w/o glfw or glut and glfw
+	*********************************************/
+	if (initType == "GLUT" || initType == "glut")
+	{
+		returnCode = glutWindowInit(argc, argv);
+		checkInit(returnCode, initType);
+		std::cout << "finish init" << std::endl;
+	}
+	else if (initType == "GLFW" || initType == "glfw")
+	{
+		returnCode = glfwWindowInit(800, 800);
+		checkInit(returnCode, initType);
+		std::cout << "finish init" << std::endl;
+	}
+	else
+		std::cout << "No valid init declared.";
+	
+	return 0;
 }
