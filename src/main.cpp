@@ -1,6 +1,7 @@
 // Include GLEW
 #include <GL/glew.h>
-#include "canvas\display\canvas.hpp"
+#include "canvas/display/canvas.hpp"
+#include <string>
 
 #include <iostream>
 
@@ -13,7 +14,7 @@
 int main(int argc, char** argv)
 {
 	int returnCode = 0;
-	char initType[4];
+	std::string initType = "";
 	std::cout << "Declare 'GLUT' init or 'GLFW' init: ";
 	std::cin >> initType;
 

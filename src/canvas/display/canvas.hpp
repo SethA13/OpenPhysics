@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <string>
 
 void glutDisplay()
 {
@@ -130,7 +131,7 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
     return 0;
 }
 
-void checkInit(int returnCode, char* initType)
+void checkInit(int returnCode, std::string initType)
 {
     if (returnCode < 0)
     {
