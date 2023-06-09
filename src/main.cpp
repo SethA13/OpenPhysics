@@ -13,7 +13,6 @@
 
 int main(int argc, char** argv)
 {
-	int returnCode = 0;
 	std::string initType = "";
 	std::cout << "Declare 'GLUT' init or 'GLFW' init: ";
 	std::cin >> initType;
@@ -25,15 +24,11 @@ int main(int argc, char** argv)
 	*********************************************/
 	if (initType == "GLUT" || initType == "glut")
 	{
-		returnCode = glutWindowInit(argc, argv);
-		checkInit(returnCode, initType);
-		std::cout << "finish init" << std::endl;
+		glutWindowInit(argc, argv);
 	}
 	else if (initType == "GLFW" || initType == "glfw")
 	{
-		returnCode = glfwWindowInit(800, 800);
-		checkInit(returnCode, initType);
-		std::cout << "finish init" << std::endl;
+		glfwWindowInit(800, 800);
 	}
 	else
 		std::cout << "No valid init declared.";

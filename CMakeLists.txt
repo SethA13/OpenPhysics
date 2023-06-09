@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 # Define the paths to your dependencies
-set(GLM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependancies/glm-0.9.7.1)
+set(GLM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependancies/glm/glm)
 
 # Add the glm library as a subdirectory
 add_subdirectory(${GLM_DIR})

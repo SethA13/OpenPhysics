@@ -7,6 +7,15 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
+
+// Function Prototypes
+void glutDisplay();
+int glutWindowInit(int argc, char** argv);
+void glfwWindowInit(int WIDTH, int HEIGHT);
+void glfwMainLoop(GLFWwindow* window, GLuint shaderProgram);
+void checkInit(int returnCode, std::string initType);
+
 
 void glutDisplay()
 {
@@ -34,13 +43,15 @@ int glutWindowInit(int argc, char** argv)
     return 0;
 }
 
-int glfwWindowInit(int WIDTH, int HEIGHT)
+
+
+void glfwWindowInit(int WIDTH, int HEIGHT)
 {
-     // Initialize GLFW
+    // Initialize GLFW
     if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
-        return -1;
+        std::exit;
     }
 
     // Set GLFW options
@@ -55,7 +66,7 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        return -1;
+        std::exit;
     }
 
     // Set the current context to the GLFW window
@@ -70,7 +81,7 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
     {
         std::cerr << "Failed to initialize GLEW" << std::endl;
         glfwTerminate();
-        return -1;
+        std::exit;
     }
 
     // Define the viewport dimensions
@@ -90,7 +101,7 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
         std::cerr << "Error compiling vertex shader:\n" << infoLog << std::endl;
         glfwTerminate();
-        return -1;
+        std::exit;
     }
 
     // Compile fragment shader
@@ -105,7 +116,7 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "Error compiling fragment shader:\n" << infoLog << std::endl;
         glfwTerminate();
-        return -1;
+        std::exit;
     }
 
     // Create shader program
@@ -121,14 +132,39 @@ int glfwWindowInit(int WIDTH, int HEIGHT)
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "Error linking shader program:\n" << infoLog << std::endl;
         glfwTerminate();
-        return -1;
+        std::exit;
     }
 
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    return 0;
+    glfwMainLoop(window, shaderProgram);
+
+    return;
+}
+
+void glfwMainLoop(GLFWwindow* window, GLuint shaderProgram)
+{
+        while (!glfwWindowShouldClose(window))
+    {
+        // Check and call events
+        glfwPollEvents();
+
+        // Clear the screen
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Use the shader program
+        glUseProgram(shaderProgram);
+
+        //TODO: add display logic
+        
+
+        // Swap the buffers
+        glfwSwapBuffers(window);
+    }
+    return;
 }
 
 void checkInit(int returnCode, std::string initType)
