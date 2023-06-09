@@ -1,16 +1,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "../../dependancies/glm/glm/ext.hpp"
-#include "../../dependancies/glm/glm/gtc/matrix_transform.hpp"
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 // Circle parameters
-const GLfloat radius = 0.1f;
-const GLint numSegments = 30;
+const GLfloat radius = 0.2f;
+const GLint numSegments = 1000;
 
 // Shader source code
 const GLchar* vertexShaderSource = R"(
@@ -28,7 +27,7 @@ const GLchar* fragmentShaderSource = R"(
     out vec4 color;
     void main()
     {
-        color = vec4(1.0, 0.0, 0.0, 1.0);
+        color = vec4(1.0, 1.0, 1.0, 1.0);
     }
 )";
 
@@ -140,9 +139,9 @@ int main()
     circleVertices.push_back(0.0f);
     for (int i = 0; i <= numSegments; ++i)
     {
-        GLfloat theta = 2.0f * glm::pi<float>() * static_cast<float>(i) / numSegments;
-        circleVertices.push_back(radius * cos(theta));
-        circleVertices.push_back(radius * sin(theta));
+        GLfloat theta = 2.0f * 3.14159f * static_cast<float>(i) / numSegments;
+        circleVertices.push_back(radius * std::cos(theta));
+        circleVertices.push_back(radius * std::sin(theta));
     }
 
     GLuint VAO, VBO;
@@ -170,16 +169,21 @@ int main()
         glUseProgram(shaderProgram);
 
         // Update circle position
-        static float posY = 1.0f;
-        posY -= 0.01f;
+        static float posY = 1.0f - radius;
+        if (posY - radius > -1.0f)
+        {
+            posY -= 0.01f;
+        }
 
         // Set model matrix
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(0.0f, posY, 0.0f));
+        GLfloat model[16] = { 1.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 1.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f, 0.0f,
+                              0.0f, posY, 0.0f, 1.0f };
 
         // Pass the model matrix to the shader
         GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model);
 
         // Draw the circle
         glBindVertexArray(VAO);
