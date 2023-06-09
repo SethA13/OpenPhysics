@@ -3,6 +3,7 @@
 
 #include "canvas\display\canvas.hpp"
 
+
 // Include GLFW
 #include <GLFW/glfw3.h>
 

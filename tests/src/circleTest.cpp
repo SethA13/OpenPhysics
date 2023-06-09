@@ -5,7 +5,7 @@
 #include <cmath>
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 800, HEIGHT = 800;
 
 // Circle parameters
 const GLfloat radius = 0.2f;
