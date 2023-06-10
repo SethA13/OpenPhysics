@@ -20,28 +20,37 @@ TESTBINDIR = .\tests\bin
  # test declaration prototypes
 ##################################
 GLUTTEST = glutTest
-GLUTTEST_SRCS = $(TESTSRCSDIR)\glutTest.cpp
+GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp
 GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GLUTTEST_SRCS:.cpp=.o))
 
 COLLISIONS = collisionTest
-COLLISIONS_SRCS = $(TESTSRCSDIR)\collisionTest.cpp
+COLLISIONS_SRCS = $(TESTSRCSDIR)\$(COLLISIONS).cpp
 COLLISIONS_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(COLLISIONS_SRCS:.cpp=.o))
 
 PLANETS = planetTest
-PLANETS_SRCS = $(TESTSRCSDIR)\planetTest.cpp
+PLANETS_SRCS = $(TESTSRCSDIR)\$(PLANETS).cpp
 PLANETS_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(PLANETS_SRCS:.cpp=.o))
 
 CIRCLE = circleTest
-CIRCLE_SRCS = $(TESTSRCSDIR)\circleTest.cpp
+CIRCLE_SRCS = $(TESTSRCSDIR)\$(CIRCLE).cpp
 CIRCLE_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(CIRCLE_SRCS:.cpp=.o))
+
+RECTANGLE = rectangleTest
+RECT_SRCS = $(TESTSRCSDIR)\$(RECTANGLE).cpp
+RECT_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(RECT_SRCS:.cpp=.o))
+
+POINT = pointTest
+POINT_SRCS = $(TESTSRCSDIR)\$(POINT).cpp
+POINT_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(POINT_SRCS:.cpp=.o))
 #####################################
  # clean test declaration prototypes
 #####################################
 CLEAN_GLUTTEST = clean_glutTest
 CLEAN_COLLISIONS = clean_collisions
 CLEAN_PLANETS = clean_planets
-CLEAN_CIRCLE = CLEAN_CIRCLE
-
+CLEAN_CIRCLE = clean_circle
+CLEAN_RECTANGLE = clean_rectangle
+CLEAN_POINT = clean_point
 
 
 PROJSRCSDIR = .\src
@@ -98,9 +107,9 @@ all: tests project
 
 clean_all: clean_tests clean_project
 
-tests: glut collisions planets circle
+tests: glut collisions planets circle rectangle point
 
-clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE)
+clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE) $(CLEAN_RECTANGLE) $(CLEAN_POINT)
 
 
 ##############################################################
@@ -170,6 +179,37 @@ $(CIRCLE): $(CIRCLE_OBJS)
 $(CLEAN_CIRCLE):
 	del /Q $(TESTOBJSDIR)\$(CIRCLE).o $(TESTBINDIR)\$(CIRCLE).exe
 
+#####################################
+# for making the rectangle test file
+#####################################
+rectangle: $(RECTANGLE)
+	@echo "rectangleTest built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(RECTANGLE).o' -Destination '$(TESTOBJSDIR)\$(RECTANGLE).o' -force"
+
+$(RECTANGLE): $(RECT_OBJS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_RECTANGLE):
+	del /Q $(TESTOBJSDIR)\$(RECTANGLE).o $(TESTBINDIR)\$(RECTANGLE).exe
+
+#####################################
+# for making the point test file
+#####################################
+point: $(POINT)
+	@echo "pointTest built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(POINT).o' -Destination '$(TESTOBJSDIR)\$(POINT).o' -force"
+
+$(POINT): $(POINT_OBJS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_POINT):
+	del /Q $(TESTOBJSDIR)\$(POINT).o $(TESTBINDIR)\$(POINT).exe
 ##############################################################
 #						Project Files
 ##############################################################

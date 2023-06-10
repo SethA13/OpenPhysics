@@ -6,6 +6,8 @@
 class Rectangle: public Object
 {
 private:
+    GLint numSegments;
+    std::vector<GLfloat> circleVertices;
         char shape;
         float width;
         float height;
@@ -14,6 +16,11 @@ public:
     char getShape() const;
     float getWidth() const;
     float getHeight() const;
+    const std::vector<GLfloat>& getVertices() const
+    {
+        return circleVertices;
+    }
+
 
     // setters
     void setShape(char shape);
