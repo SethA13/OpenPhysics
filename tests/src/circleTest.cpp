@@ -4,12 +4,46 @@
 #include <vector>
 #include <cmath>
 
+class Circle {
+public:
+    Circle(float radius, GLint numSegments)
+        : radius(radius), numSegments(numSegments)
+    {
+        calculateVertices();
+    }
+
+    void calculateVertices()
+    {
+        circleVertices.clear();
+        circleVertices.reserve((numSegments + 1) * 2);
+        circleVertices.push_back(0.0f); // Center point
+        circleVertices.push_back(0.0f);
+        for (int i = 0; i <= numSegments; ++i)
+        {
+            GLfloat theta = 2.0f * 3.14159f * static_cast<float>(i) / numSegments;
+            circleVertices.push_back(radius * std::cos(theta));
+            circleVertices.push_back(radius * std::sin(theta));
+        }
+    }
+
+    const std::vector<GLfloat>& getVertices() const
+    {
+        return circleVertices;
+    }
+
+    GLfloat getRadius() const
+    {
+        return radius;
+    }
+
+private:
+    GLfloat radius;
+    GLint numSegments;
+    std::vector<GLfloat> circleVertices;
+};
+
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 800;
-
-// Circle parameters
-const GLfloat radius = 0.2f;
-const GLint numSegments = 1000;
 
 // Shader source code
 const GLchar* vertexShaderSource = R"(
@@ -132,18 +166,11 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Set up vertex data and attribute pointers for circle
-    std::vector<GLfloat> circleVertices;
-    circleVertices.reserve((numSegments + 1) * 2);
-    circleVertices.push_back(0.0f); // Center point
-    circleVertices.push_back(0.0f);
-    for (int i = 0; i <= numSegments; ++i)
-    {
-        GLfloat theta = 2.0f * 3.14159f * static_cast<float>(i) / numSegments;
-        circleVertices.push_back(radius * std::cos(theta));
-        circleVertices.push_back(radius * std::sin(theta));
-    }
+    // Create the circle object
+    Circle circle(0.2f, 1000);
 
+    // Set up vertex data and attribute pointers for circle
+    const std::vector<GLfloat>& circleVertices = circle.getVertices();
     GLuint VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -169,8 +196,8 @@ int main()
         glUseProgram(shaderProgram);
 
         // Update circle position
-        static float posY = 1.0f - radius;
-        if (posY - radius > -1.0f)
+        static float posY = 1.0f - circle.getRadius();
+        if (posY - circle.getRadius() > -1.0f)
         {
             posY -= 0.01f;
         }
@@ -187,7 +214,7 @@ int main()
 
         // Draw the circle
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, numSegments + 1);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, circle.getVertices().size() / 2);
         glBindVertexArray(0);
 
         // Swap the buffers

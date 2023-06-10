@@ -11,17 +11,17 @@ private:
         float height;
 public:
     // getters
-    char getShape();
-    float getWidth();
-    float getHeight();
+    char getShape() const;
+    float getWidth() const;
+    float getHeight() const;
 
     // setters
-    char setShape();
-    float setWidth();
-    float setHeight();
+    void setShape(char shape);
+    void setWidth(float width);
+    void setHeight(float height);
 
     // constructor
-    Rectangle(/* args */);
+    Rectangle(float width = 0.0, float height = 0.0, char shape = ' ');
 
     // destructor
     ~Rectangle();

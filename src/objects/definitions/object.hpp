@@ -16,15 +16,20 @@ private:
 
 public:
     // getter
-    Point getCenterPoint();
+    Point getCenterPoint() const;
+    Velocity getVelocity() const;
+    float getRotation() const;
     // setter
-    Point setCenterPoint();
+    void setCenterPoint(const Point& center);
+    void setVelocity(const Velocity& v);
+    void setRotation(float angle);
     // constructors
 
-    Object(Point centerPoint) : centerPoint(0.0, 0.0) {}
+    Object(const Point& centerPoint = Point(0.0, 0.0), const Velocity& velocity = Velocity(0.0, 0.0), float rotation = 0.0);
+
 
     // destructor
-    ~Object();
+    virtual ~Object();
 };
 
 #endif // OBJECT_H

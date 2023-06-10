@@ -7,15 +7,10 @@ ifeq ($(OS),Windows_NT)
 	CC = g++
 	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm -Wl,-rpath=$(PROJECTDIR)dependancies/glm -lglm_shared
-
-	SEP = \
-
 else
 	CC = g++
 	CFLAGS = -std=c++11 -Wall -Wextra
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -lglm
-
-	SEP = /
 endif
 
 TESTSRCSDIR = .\tests\src
@@ -52,11 +47,19 @@ CLEAN_CIRCLE = CLEAN_CIRCLE
 PROJSRCSDIR = .\src
 PROJOBJSDIR = .\bin\objs
 PROJBINDIR = .\bin
+
+OBJSRCDIR = $(PROJSRCSDIR)\objects\functions
+
+CIRCLEOBJ = circle
+POINTOBJ = point
+RECTOBJ = rectangle
+OBJOBJ = object
+VELOCITYOBJ = velocity
 #####################################
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\main.cpp
+PROJECT_SRCS = $(PROJSRCSDIR)\main.cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp 
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
@@ -97,7 +100,7 @@ clean_all: clean_tests clean_project
 
 tests: glut collisions planets circle
 
-clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS)
+clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE)
 
 
 ##############################################################
@@ -173,6 +176,11 @@ $(CLEAN_CIRCLE):
 project: $(PROJECT)
 	@echo "project built!"
 	powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
 
 $(PROJECT): $(PROJECT_OBJS)
 	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)
@@ -182,3 +190,8 @@ $(PROJECT): $(PROJECT_OBJS)
 
 $(CLEAN_PROJECT):
 	del /Q $(PROJOBJSDIR)\$(PROJECT).o $(PROJBINDIR)\$(PROJECT).exe
+	del /Q $(PROJOBJSDIR)\$(CIRCLEOBJ).o
+	del /Q $(PROJOBJSDIR)\$(POINTOBJ).o
+	del /Q $(PROJOBJSDIR)\$(RECTOBJ).o
+	del /Q $(PROJOBJSDIR)\$(OBJOBJ).o
+	del /Q $(PROJOBJSDIR)\$(VELOCITYOBJ).o

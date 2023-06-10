@@ -3,33 +3,40 @@
 /**********************
  * Constructors
 **********************/
-
+Point::Point(float xPosition, float yPosition)
+    : xPosition(xPosition), yPosition(yPosition)
+{
+}
 
 /********************
  * Getters
 ********************/
-float Point::getXPosition()
+float Point::getXPosition() const
 {
-
+    return xPosition;
 }
 
-float Point::getYPosition()
+float Point::getYPosition() const
 {
-
+    return yPosition;
 }
 
 /********************
  * Setters
 ********************/
-float Point::setXPosition()
+void Point::setXPosition(float x)
 {
-
+    xPosition = x;
 }
 
-float Point::setYPosition()
+void Point::setYPosition(float y)
 {
-    
+    yPosition = y;
 }
+
 /********************
  * Destructors
 ********************/
+Point::~Point()
+{
+}

@@ -3,34 +3,40 @@
 /**********************
  * Constructors
 **********************/
-
+Circle::Circle(float radius, char shape)
+    : Object(), radius(radius), shape(shape)
+{
+}
 
 /********************
  * Getters
 ********************/
-char Circle::getShape()
+char Circle::getShape() const
 {
-    return this->shape;
+    return shape;
 }
 
-float Circle::getRadius()
+float Circle::getRadius() const
 {
-    return this->radius;
+    return radius;
 }
 
 /********************
  * Setters
 ********************/
-char Circle::setShape()
+void Circle::setShape(char shape)
 {
-    shape = this->shape;
+    this->shape = shape;
 }
 
-float Circle::setRadius()
+void Circle::setRadius(float radius)
 {
-    radius = this->radius;
+    this->radius = radius;
 }
 
 /********************
  * Destructors
 ********************/
+Circle::~Circle()
+{
+}

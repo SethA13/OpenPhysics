@@ -13,21 +13,25 @@
 
 int main(int argc, char** argv)
 {
-	std::string initType = "";
-	std::cout << "Declare 'GLUT' init or 'GLFW' init: ";
-	std::cin >> initType;
+	std::string initType ="";
+	// check if there is more than one argument and use the second one
+	//  (the first argument is the executable)
+	if (argc > 1)
+	{
+	std::string arg1(argv[1]);
+	initType = arg1;
+	}
+	else
+	{
+		std::cout << "Declare 'GLUT' init or 'GLFW' init: ";
+		std::cin >> initType;
+	}
 
 	std::cout << "init Type declared: " << initType << std::endl;
-
-	/*********************************************
-	 * Initialize glut w/o glfw or glut and glfw
-	*********************************************/
-	if (initType == "GLUT" || initType == "glut")
+	
+	if (initType == "GLFW" || initType == "glfw")
 	{
-		glutWindowInit(argc, argv);
-	}
-	else if (initType == "GLFW" || initType == "glfw")
-	{
+		std::cout << "Creating GLFW window..." << std::endl;
 		glfwWindowInit(800, 800);
 	}
 	else

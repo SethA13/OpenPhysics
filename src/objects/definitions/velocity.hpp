@@ -7,17 +7,21 @@ private:
     float deltaX;
     float deltaY;
 public:
-    Velocity(/* args */);
+
+    //getters 
+    float getDeltaX() const;
+    float getDeltaY() const;
+
+    //setters
+    void setDeltaX(float value);
+    void setDeltaY(float value);
+
+    //constructor
+    Velocity(float deltaX = 0.0, float deltaY = 0.0);
+
+    //destructor
     ~Velocity();
 };
-
-Velocity::Velocity(/* args */)
-{
-}
-
-Velocity::~Velocity()
-{
-}
 
 
 #endif // VELOCITY_HPP

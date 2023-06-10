@@ -10,15 +10,17 @@ private:
         float radius;
 public:
     // getters
-    char getShape();
-    float getRadius();
+    char getShape() const;
+    float getRadius() const;
 
     // setters
-    char setShape();
-    float setRadius();
+    void setShape(char shape);
+    void setRadius(float radius);
 
-    // constructors
-    Circle(/* args */);
+    // constructor
+    Circle(float radius = 0.0, char shape = ' ');
+
+    // destructor
     ~Circle();
 };
 

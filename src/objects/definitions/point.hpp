@@ -13,14 +13,15 @@ private:
 
 public:
     // getter
-    float getXPosition();
-    float getYPosition();
+    float getXPosition() const;
+    float getYPosition() const;
     // setter
-    float setXPosition();
-    float setYPosition();
-    // constructors
+    void setXPosition(float x);
+    void setYPosition(float y);
 
-    Point(float xPosition, float yPosition) : xPosition(0.0), yPosition(0.0) {}
+
+    // constructors
+    Point(float xPosition = 0.0, float yPosition = 0.0);
 
     // destructor
     ~Point();

@@ -3,44 +3,51 @@
 /**********************
  * Constructors
 **********************/
-
+Rectangle::Rectangle(float width, float height, char shape)
+    : Object(), width(width), height(height), shape(shape)
+{
+}
 
 /********************
  * Getters
 ********************/
-char Rectangle::getShape()
+char Rectangle::getShape() const
 {
-
+    return shape;
 }
 
-float Rectangle::getWidth()
+float Rectangle::getWidth() const
 {
-
+    return width;
 }
 
-float Rectangle::getHeight()
+float Rectangle::getHeight() const
 {
-
+    return height;
 }
+
 
 /********************
  * Setters
 ********************/
-char Rectangle::setShape()
+void Rectangle::setShape(char shape)
 {
-
+    this->shape = shape;
 }
 
-float Rectangle::setWidth()
+void Rectangle::setWidth(float width)
 {
-
+    this->width = width;
 }
 
-float Rectangle::setHeight()
+void Rectangle::setHeight(float height)
 {
-
+    this->height = height;
 }
 
 /********************
  * Destructors
 ********************/
+Rectangle::~Rectangle()
+{
+}
