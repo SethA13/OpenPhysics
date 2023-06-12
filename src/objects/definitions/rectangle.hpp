@@ -1,7 +1,10 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-#include"object.hpp"
+
+#include <GL/glut.h>
+#include <vector>
+#include "object.hpp"
 
 class Rectangle: public Object
 {

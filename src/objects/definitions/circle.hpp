@@ -18,7 +18,7 @@ public:
     void setRadius(float radius);
 
     // constructor
-    Circle(float radius = 0.0, char shape = ' ');
+    Circle(float radius = 0.0, char shape = 'C');
 
     // destructor
     ~Circle();

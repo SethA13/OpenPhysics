@@ -16,11 +16,24 @@ endif
 TESTSRCSDIR = .\tests\src
 TESTOBJSDIR = .\tests\bin\objs
 TESTBINDIR = .\tests\bin
+
+PROJSRCSDIR = .\src
+PROJOBJSDIR = .\bin\objs
+PROJBINDIR = .\bin
+
+OBJSRCDIR = $(PROJSRCSDIR)\objects\functions
+
+CIRCLEOBJ = circle
+POINTOBJ = point
+RECTOBJ = rectangle
+OBJOBJ = object
+VELOCITYOBJ = velocity
+
 ##################################
  # test declaration prototypes
 ##################################
 GLUTTEST = glutTest
-GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp
+GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp
 GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GLUTTEST_SRCS:.cpp=.o))
 
 COLLISIONS = collisionTest
@@ -68,7 +81,7 @@ VELOCITYOBJ = velocity
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\main.cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp 
+PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp 
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
