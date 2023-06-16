@@ -18,11 +18,12 @@
 // Function Prototypes
 void glutDisplay();
 int glutWindowInit(int argc, char** argv);
-void glfwWindowInit(int WIDTH, int HEIGHT);
-void glfwMainLoop(GLFWwindow* window);
+GLFWwindow* glfwWindowInit(int WIDTH, int HEIGHT);
+void glfwMainLoop(GLFWwindow* &window);
 void checkInit(int returnCode, std::string initType);
-void ModelInit(GLuint shaderProgram, const Circle& circle);
-void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint shaderProgram);
+void ModelInit(GLuint &shaderProgram, const Circle& circle);
+void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint &shaderProgram);
+void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram);
 
 
 void glutDisplay()
@@ -53,13 +54,13 @@ int glutWindowInit(int argc, char** argv)
 
 
 
-void glfwWindowInit(int WIDTH, int HEIGHT)
+GLFWwindow* glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 {
     // Initialize GLFW
     if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Set GLFW options
@@ -69,12 +70,12 @@ void glfwWindowInit(int WIDTH, int HEIGHT)
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Circle Render", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Circle", nullptr, nullptr);
     if (!window)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Set the current context to the GLFW window
@@ -89,7 +90,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT)
     {
         std::cerr << "Failed to initialize GLEW" << std::endl;
         glfwTerminate();
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Define the viewport dimensions
@@ -109,7 +110,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT)
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
         std::cerr << "Error compiling vertex shader:\n" << infoLog << std::endl;
         glfwTerminate();
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Compile fragment shader
@@ -124,7 +125,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT)
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "Error compiling fragment shader:\n" << infoLog << std::endl;
         glfwTerminate();
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Create shader program
@@ -140,19 +141,66 @@ void glfwWindowInit(int WIDTH, int HEIGHT)
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "Error linking shader program:\n" << infoLog << std::endl;
         glfwTerminate();
-        std::exit(1);
+        std::exit(-1);
     }
 
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    glfwMainLoop(window);
+    // Create the circle object
+    GLFWCircle circle(0.2f,     //Radius
+                  1000);    //Numsegments
 
-    return;
+    // Set up vertex data and attribute pointers for circle
+    const std::vector<GLfloat>& circleVertices = circle.getVertices();
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(GLfloat), circleVertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Check and call events
+        glfwPollEvents();
+
+        // Clear the screen
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Use the shader program
+        glUseProgram(shaderProgram);
+
+        // Set model matrix
+        GLfloat model[16] = { 1.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 1.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f, 1.0f };
+
+        // Pass the model matrix to the shader
+        GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model);
+
+        // Draw the circle
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, circle.getVertices().size() / 2);
+        glBindVertexArray(0);
+
+        // Swap the buffers
+        glfwSwapBuffers(window);
+    }
+
+    return window;
 }
 
-void glfwMainLoop(GLFWwindow* window)
+void glfwMainLoop(GLFWwindow* &window)
 {
     Circle circle(100.0f, 'C');
     int windowWidth;
@@ -193,7 +241,7 @@ void glfwMainLoop(GLFWwindow* window)
 }
 
 
-void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint shaderProgram)
+void setupCircleRendering(GLuint &vao, GLuint &vbo, GLuint &shaderProgram)
 {
     // Create and bind Vertex Array Object (VAO)
     glGenVertexArrays(1, &vao);
@@ -281,4 +329,15 @@ void checkInit(int returnCode, std::string initType)
     }
     else
         std::cout << "Initialization success!" << std::endl;
+}
+
+void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram)
+{
+    // Clean up resources
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderProgram);
+
+    // Terminate GLFW
+    glfwTerminate();
 }
