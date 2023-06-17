@@ -47,7 +47,7 @@ private:
 };
 
 // Window dimensions
-const GLuint WIDTH = 1040, HEIGHT = 720;
+const GLuint WIDTH = 1000, HEIGHT = 720;
 
 // Shader source code
 const GLchar* vertexShaderSource = R"(
@@ -202,7 +202,7 @@ int animationOP()
     glDeleteShader(fragmentShader);
 
     // Create the circle object
-    Circle circle(0.01f,     //Radius
+    Circle circle(0.1f,     //Radius
                   1000);    //Numsegments
 
     // Set up vertex data and attribute pointers for circle
@@ -219,6 +219,7 @@ int animationOP()
     glBindVertexArray(0);
 
     // Main loop
+    float fallAmount = 0.0f;
     while (!glfwWindowShouldClose(window))
     {
         // Check and call events
@@ -235,7 +236,10 @@ int animationOP()
         static float posY = 1.0f - circle.getRadius();
         if (posY - circle.getRadius() > -1.0f)
         {
-            posY -= 0.01f;
+            posY -= (0.01f + fallAmount);
+            std::cout << "Positon: " << posY << std::endl;
+            std::cout << "Fall Amount: " << fallAmount << std::endl;
+            fallAmount += 0.0003;
         }
 
         // Set model matrix

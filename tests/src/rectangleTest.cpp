@@ -68,11 +68,11 @@ private:
 };
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 800;
+const GLuint WIDTH = 800, HEIGHT = 1080;
 
 // Rectangle parameters
-const GLfloat width = 0.4f;
-const GLfloat height = 0.2f;
+const GLfloat width = 0.2f;
+const GLfloat height = 0.1f;
 
 // Shader source code
 const GLchar* vertexShaderSource = R"(
@@ -209,6 +209,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    float fallAmount = 0.0f;
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -222,11 +223,27 @@ int main()
         // Use the shader program
         glUseProgram(shaderProgram);
 
+        static float posY = 1.0f - rectangle.getHeight();
+        if (posY - rectangle.getHeight() > -1.0f)
+        {
+            posY -= (0.01f + fallAmount);
+            std::cout << "Positon: " << posY << std::endl;
+            std::cout << "Fall Amount: " << fallAmount << std::endl;
+            fallAmount += 0.0003;
+        }
+        else if (posY - rectangle.getHeight() != -1.0f)
+        {
+            posY = -1.0f + rectangle.getHeight();
+        }
+        
+        else
+        posY = -1.0f + rectangle.getHeight();
+
         // Set model matrix
         GLfloat model[16] = { 1.0f, 0.0f, 0.0f, 0.0f,
                               0.0f, 1.0f, 0.0f, 0.0f,
                               0.0f, 0.0f, 1.0f, 0.0f,
-                              0.0f, 0.0f, 0.0f, 1.0f };
+                              0.0f, posY, 0.0f, 1.0f };
 
         // Pass the model matrix to the shader
         GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");

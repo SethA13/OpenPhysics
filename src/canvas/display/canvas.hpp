@@ -17,10 +17,9 @@
 
 // Function Prototypes
 void glutDisplay();
-int glutWindowInit(int argc, char** argv);
-void glfwWindowInit(int WIDTH, int HEIGHT);
-void glfwMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle);
-void checkInit(int returnCode, std::string initType);
+int glutWindowInit(int argc, char** argv, char *windowName);
+void glfwCircleWindowInit(int WIDTH, int HEIGHT);
+void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle);
 void ModelInit(GLuint &shaderProgram, const Circle& circle);
 void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint &shaderProgram);
 void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram);
@@ -39,12 +38,12 @@ void glutDisplay()
     return;
 }
 
-int glutWindowInit(int argc, char** argv)
+int glutWindowInit(int argc, char** argv, char *windowName)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(1040, 720);
-    glutCreateWindow("This window name");
+    glutCreateWindow(windowName);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glOrtho(0, 1040.0, 720.0, 0, 0, 1); // Orient and define grid
     glutDisplayFunc(glutDisplay);
@@ -54,7 +53,7 @@ int glutWindowInit(int argc, char** argv)
 
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
+void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
 {
     // Initialize GLFW
     if (!glfwInit())
@@ -70,7 +69,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Circle", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, windowName, nullptr, nullptr);
     if (!window)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -149,8 +148,8 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glDeleteShader(fragmentShader);
 
     // Create the circle object
-    GLFWCircle circle(0.2f,     //Radius
-                  1000);    //Numsegments
+    GLFWCircle circle   (0.2f,     //Radius
+                        1000);    //Numsegments
 
     // Set up vertex data and attribute pointers for circle
     const std::vector<GLfloat>& circleVertices = circle.getVertices();
@@ -165,14 +164,14 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glfwMainLoop(window, shaderProgram, VAO, circle);
+    glfwCircleMainLoop(window, shaderProgram, VAO, circle);
 
     //cleanup on shutdown
     GLFWCleanup(VAO, VBO, shaderProgram);
     return;
 }
 
-void glfwMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle)
+void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle)
 {
         // Main loop
     while (!glfwWindowShouldClose(window))
@@ -267,11 +266,12 @@ void ModelInit(GLuint shaderProgram, const Circle& circle)
     // Draw a filled circle using triangle fan
     const int numSegments = 1000;  // Number of line segments to approximate the circle
     const float angleIncrement = 2.0f * 3.14159f / static_cast<float>(numSegments);
-    const float centerX = 0.0f;
-    const float centerY = 0.0f;
+    float centerX = 0.0f;
+    float centerY = 0.0f;
 
     glBegin(GL_TRIANGLE_FAN);
     glVertexAttrib3f(0, 1.0f, 1.0f, 1.0f);  // Set circle color to white
+    //TODO apply gravity
 
     glVertexAttrib2f(1, centerX, centerY);  // Center point of the circle
 
@@ -284,19 +284,6 @@ void ModelInit(GLuint shaderProgram, const Circle& circle)
         glDrawArrays(GL_POINTS, 0, 1);
     }
     glEnd();
-}
-
-
-
-void checkInit(int returnCode, std::string initType)
-{
-    if (returnCode < 0)
-    {
-        std::cout << initType << " failed to initialize properly." << std::endl;
-		std::exit;
-    }
-    else
-        std::cout << "Initialization success!" << std::endl;
 }
 
 void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram)
