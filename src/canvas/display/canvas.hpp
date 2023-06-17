@@ -18,8 +18,8 @@
 // Function Prototypes
 void glutDisplay();
 int glutWindowInit(int argc, char** argv);
-GLFWwindow* glfwWindowInit(int WIDTH, int HEIGHT);
-void glfwMainLoop(GLFWwindow* &window);
+void glfwWindowInit(int WIDTH, int HEIGHT);
+void glfwMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle);
 void checkInit(int returnCode, std::string initType);
 void ModelInit(GLuint &shaderProgram, const Circle& circle);
 void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint &shaderProgram);
@@ -54,7 +54,7 @@ int glutWindowInit(int argc, char** argv)
 
 
 
-GLFWwindow* glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 {
     // Initialize GLFW
     if (!glfwInit())
@@ -165,7 +165,16 @@ GLFWwindow* glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Main loop
+    glfwMainLoop(window, shaderProgram, VAO, circle);
+
+    //cleanup on shutdown
+    GLFWCleanup(VAO, VBO, shaderProgram);
+    return;
+}
+
+void glfwMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle)
+{
+        // Main loop
     while (!glfwWindowShouldClose(window))
     {
         // Check and call events
@@ -196,48 +205,7 @@ GLFWwindow* glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
         // Swap the buffers
         glfwSwapBuffers(window);
     }
-
-    return window;
-}
-
-void glfwMainLoop(GLFWwindow* &window)
-{
-    Circle circle(100.0f, 'C');
-    int windowWidth;
-    int windowHeight;
-    glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
-    // Calculate the center coordinates
-    float centerX = windowWidth / 2.0f;
-    float centerY = windowHeight / 2.0f;
-
-    // Create a Point object with the center coordinates
-    Point centerPoint(centerX, centerY);
-
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
-
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Set up circle drawing
-        glColor3f(1.0f, 1.0f, 1.0f);  // Set circle color to white
-
-        // Draw a filled circle using triangle fan
-        int numSegments = 1000;  // Number of line segments to approximate the circle
-        glBegin(GL_TRIANGLE_FAN);
-        for (int i = 0; i <= numSegments; ++i)
-        {
-            float angle = 2.0f * 3.14159f * float(i) / float(numSegments);
-            float x = centerPoint.getXPosition() + circle.getRadius() * cosf(angle);
-            float y = centerPoint.getYPosition() + circle.getRadius() * sinf(angle);
-            glVertex2f(x, y);
-        }
-        glEnd();
-
-        glfwSwapBuffers(window);
-    }
+    return;
 }
 
 

@@ -5,9 +5,9 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-class Rectangle {
+class GLFWRectangle {
 public:
-    Rectangle(float width, float height)
+    GLFWRectangle(float width, float height)
         : width(width), height(height)
     {
         calculateVertices();

@@ -21,7 +21,8 @@ PROJSRCSDIR = .\src
 PROJOBJSDIR = .\bin\objs
 PROJBINDIR = .\bin
 
-OBJSRCDIR = $(PROJSRCSDIR)\objects\functions
+OBJCPPDIR = $(PROJSRCSDIR)\objects\functions
+OBJHPPDIR = $(PROJSRCSDIR)\objects\definitions
 
 CIRCLEOBJ = circle
 POINTOBJ = point
@@ -29,11 +30,25 @@ RECTOBJ = rectangle
 OBJOBJ = object
 VELOCITYOBJ = velocity
 
+BASEOBJS = $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDIR)\$(RECTOBJ).cpp $(OBJCPPDIR)\$(OBJOBJ).cpp $(OBJCPPDIR)\$(VELOCITYOBJ).cpp
+
+GLFWCIRCLEOBJ = GLFWcircle
+GLFWRECTOBJ = GLFWrectangle
+
+GLFWOBJS = $(OBJCPPDIR)\$(GLFWCIRCLEOBJ).cpp $(OBJCPPDIR)\$(GLFWRECTOBJ).cpp
+
+GRAVCIRCLEOBJ = gravityGLFWcircle
+GRAVRECTOBJ = gravityGLFWrectangle
+
+GRAVITYOBJS = $(OBJHPPDIR)\$(GRAVCIRCLEOBJ).hpp $(OBJHPPDIR)\$(GRAVRECTOBJ).hpp
+
+MASTEROBJS = $(BASEOBJS) $(GLFWOBJS) $(GRAVITYOBJS)
+
 ##################################
  # test declaration prototypes
 ##################################
 GLUTTEST = glutTest
-GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp
+GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp $(BASEOBJS)
 GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GLUTTEST_SRCS:.cpp=.o))
 
 COLLISIONS = collisionTest
@@ -55,6 +70,10 @@ RECT_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(RECT_SRCS:.cp
 POINT = pointTest
 POINT_SRCS = $(TESTSRCSDIR)\$(POINT).cpp
 POINT_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(POINT_SRCS:.cpp=.o))
+
+GRAVITY = gravityTest
+GRAVITY_SRCS = $(TESTSRCSDIR)\$(GRAVITY).cpp $(OBJHPPDIR)\$(GRAVCIRCLEOBJ).hpp
+GRAVITY_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GRAVITY_SRCS:.cpp=.o))
 #####################################
  # clean test declaration prototypes
 #####################################
@@ -64,24 +83,13 @@ CLEAN_PLANETS = clean_planets
 CLEAN_CIRCLE = clean_circle
 CLEAN_RECTANGLE = clean_rectangle
 CLEAN_POINT = clean_point
+CLEAN_GRAVITY = clean_gravity
 
-
-PROJSRCSDIR = .\src
-PROJOBJSDIR = .\bin\objs
-PROJBINDIR = .\bin
-
-OBJSRCDIR = $(PROJSRCSDIR)\objects\functions
-
-CIRCLEOBJ = circle
-POINTOBJ = point
-RECTOBJ = rectangle
-OBJOBJ = object
-VELOCITYOBJ = velocity
 #####################################
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJSRCDIR)\$(CIRCLEOBJ).cpp $(OBJSRCDIR)\$(POINTOBJ).cpp $(OBJSRCDIR)\$(RECTOBJ).cpp $(OBJSRCDIR)\$(OBJOBJ).cpp $(OBJSRCDIR)\$(VELOCITYOBJ).cpp 
+PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDIR)\$(RECTOBJ).cpp $(OBJCPPDIR)\$(OBJOBJ).cpp $(OBJCPPDIR)\$(VELOCITYOBJ).cpp 
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
@@ -120,9 +128,9 @@ all: tests project
 
 clean_all: clean_tests clean_project
 
-tests: glut collisions planets circle rectangle point
+tests: glut collisions planets circle rectangle point gravity
 
-clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE) $(CLEAN_RECTANGLE) $(CLEAN_POINT)
+clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE) $(CLEAN_RECTANGLE) $(CLEAN_POINT) $(CLEAN_GRAVITY)
 
 
 ##############################################################
@@ -223,17 +231,33 @@ $(POINT): $(POINT_OBJS)
 
 $(CLEAN_POINT):
 	del /Q $(TESTOBJSDIR)\$(POINT).o $(TESTBINDIR)\$(POINT).exe
+
+#####################################
+# for making the gravity test file
+#####################################
+gravity: $(GRAVITY)
+	@echo "gravityTest built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(GRAVITY).o' -Destination '$(TESTOBJSDIR)\$(GRAVITY).o' -force"
+
+$(GRAVITY): $(GRAVITY_OBJS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_GRAVITY):
+	del /Q $(TESTOBJSDIR)\$(GRAVITY).o $(TESTBINDIR)\$(GRAVITY).exe
 ##############################################################
 #						Project Files
 ##############################################################
 project: $(PROJECT)
 	@echo "project built!"
 	powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJSRCDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
+	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
 
 $(PROJECT): $(PROJECT_OBJS)
 	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)

@@ -21,7 +21,6 @@ int main(int argc, char** argv)
 	{
 		int windowHeight = 800;
 		int windowWidth = 800;
-		GLFWwindow* window;
 	};
 	std::list<std::string> initEntries{"GLFW"};
 	std::string initType ="";
@@ -40,8 +39,7 @@ int main(int argc, char** argv)
 		const int arrayLength = initType.length();
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
-		displayPort.window = glfwWindowInit(displayPort.windowHeight, displayPort.windowWidth, windowName);
-		glfwMainLoop(displayPort.window);
+		glfwWindowInit(displayPort.windowHeight, displayPort.windowWidth, windowName);
 	}
 	else
 		std::cout << "No valid init declared.";
