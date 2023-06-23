@@ -3,9 +3,10 @@
 /**********************
  * Constructors
 **********************/
-Point::Point(float xPosition, float yPosition)
-    : xPosition(xPosition), yPosition(yPosition)
+Point::Point(float x, float y) : xPosition(0.0), yPosition(0.0)
 {
+   setXPosition(x);
+   setYPosition(y);
 }
 
 /********************
@@ -26,12 +27,12 @@ float Point::getYPosition() const
 ********************/
 void Point::setXPosition(float x)
 {
-    xPosition = x;
+    this->xPosition = x;
 }
 
 void Point::setYPosition(float y)
 {
-    yPosition = y;
+    this->yPosition = y;
 }
 
 /********************

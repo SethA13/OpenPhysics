@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 		int windowHeight = 800;
 		int windowWidth = 800;
 	};
-	std::list<std::string> initEntries{"circle"};
+	std::list<std::string> initEntries{"circle", "rectangle", "glut"};
 	std::string initType ="";
 
 	// check if there is more than one argument and use the second one
@@ -58,6 +58,8 @@ int main(int argc, char** argv)
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
 		glutWindowInit(argc, argv, windowName);
+		//not needed on return
+		delete[] windowName;
 	}
 	else
 		std::cout << "No valid init declared.";

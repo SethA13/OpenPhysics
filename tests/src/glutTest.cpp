@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-    glutWindowInit(argc, argv);
+    glutWindowInit(argc, argv, "");
     return 0;
 }

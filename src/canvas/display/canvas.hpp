@@ -18,6 +18,9 @@
 // Function Prototypes
 void glutDisplay();
 int glutWindowInit(int argc, char** argv, char *windowName);
+void glutDrawCircle(const Point & center, int radius);
+
+
 void glfwCircleWindowInit(int WIDTH, int HEIGHT);
 void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle);
 void ModelInit(GLuint &shaderProgram, const Circle& circle);
@@ -27,14 +30,10 @@ void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram);
 
 void glutDisplay()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_TRIANGLES);
-    glVertex2f(-0.5, -0.5);
-    glVertex2f(0.5, -0.5);
-    glVertex2f(0.0, 0.5);
-    glEnd();
-    glFlush();
+    glClear(GL_COLOR_BUFFER_BIT); // blit blank display
+    Point centerpoint(float xPosition = 1040.0f/2, float yPosition = 720.0f/2);
+    glutDrawCircle(centerpoint, 3);
+    glutSwapBuffers();
     return;
 }
 
@@ -45,12 +44,28 @@ int glutWindowInit(int argc, char** argv, char *windowName)
     glutInitWindowSize(1040, 720);
     glutCreateWindow(windowName);
     glClearColor(0.0, 0.0, 0.0, 0.0);
-    glOrtho(0, 1040.0, 720.0, 0, 0, 1); // Orient and define grid
+    glOrtho(0, 1040.0, 720.0, 0, -1, 1); // Orient and define grid
     glutDisplayFunc(glutDisplay);
     glutMainLoop();
     return 0;
 }
 
+void glutDrawCircle(const Point & center, int radius)
+{
+   assert(radius >= 1.0);
+   const double increment = 1.0 / (double)radius;
+
+   // begin drawing
+   glBegin(GL_POLYGON);
+
+   // go around the circle
+   for (double radians = 0; radians < 3.14159 * 2.0; radians += increment)
+      glVertex2f(center.getXPosition() + (radius * cos(radians)),
+                 center.getYPosition() + (radius * sin(radians)));
+   
+   // complete drawing
+   glEnd();   
+}
 
 
 void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
@@ -207,84 +222,6 @@ void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, G
     return;
 }
 
-
-void setupCircleRendering(GLuint &vao, GLuint &vbo, GLuint &shaderProgram)
-{
-    // Create and bind Vertex Array Object (VAO)
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create Vertex Buffer Object (VBO)
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    // Define circle vertex data
-    const int numSegments = 1000;  // Number of line segments to approximate the circle
-    const float angleIncrement = 2.0f * 3.14159f / static_cast<float>(numSegments);
-    std::vector<GLfloat> vertexData;
-    vertexData.reserve((numSegments + 2) * 2);  // (x, y) for each vertex
-
-    // Center vertex
-    vertexData.push_back(0.0f);
-    vertexData.push_back(0.0f);
-
-    // Circle vertices
-    for (int i = 0; i <= numSegments; ++i)
-    {
-        float angle = angleIncrement * static_cast<float>(i);
-        float x = cosf(angle);
-        float y = sinf(angle);
-        vertexData.push_back(x);
-        vertexData.push_back(y);
-    }
-
-    // Set vertex data into VBO
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(GLfloat), vertexData.data(), GL_STATIC_DRAW);
-
-    // Set vertex attribute pointers
-    GLuint positionAttribute = glGetAttribLocation(shaderProgram, "position");
-    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(positionAttribute);
-
-    // Unbind VAO and VBO
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void ModelInit(GLuint shaderProgram, const Circle& circle)
-{
-    // Apply translation to the model matrix
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(circle.getCenterPoint().getXPosition(), circle.getCenterPoint().getYPosition(), 0.0f));
-
-    // Apply scaling to the model matrix
-    model = glm::scale(model, glm::vec3(circle.getRadius(), circle.getRadius(), 1.0f));
-
-    // Pass the model matrix to the shader
-    GLint modelUniformLocation = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, glm::value_ptr(model));
-
-    // Draw a filled circle using triangle fan
-    const int numSegments = 1000;  // Number of line segments to approximate the circle
-    const float angleIncrement = 2.0f * 3.14159f / static_cast<float>(numSegments);
-    float centerX = 0.0f;
-    float centerY = 0.0f;
-
-    glBegin(GL_TRIANGLE_FAN);
-    glVertexAttrib3f(0, 1.0f, 1.0f, 1.0f);  // Set circle color to white
-    //TODO apply gravity
-
-    glVertexAttrib2f(1, centerX, centerY);  // Center point of the circle
-
-    for (int i = 0; i <= numSegments; ++i)
-    {
-        float angle = angleIncrement * static_cast<float>(i);
-        float x = centerX + circle.getRadius() * cosf(angle);
-        float y = centerY + circle.getRadius() * sinf(angle);
-        glVertexAttrib2f(2, x, y);  // Vertex position
-        glDrawArrays(GL_POINTS, 0, 1);
-    }
-    glEnd();
-}
 
 void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram)
 {

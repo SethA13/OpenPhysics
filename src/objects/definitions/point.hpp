@@ -1,5 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
+
+#include <iostream>
 /************************************************
  * POINT
  * The base class that all shapes inherit from.
@@ -21,10 +23,15 @@ public:
 
 
     // constructors
-    Point(float xPosition = 0.0, float yPosition = 0.0);
+    Point(float xPosition, float yPosition);
+    Point()            : xPosition(0.0), yPosition(0.0)  {}
+    Point(bool check)  : xPosition(0.0), yPosition(0.0)  {}
 
     // destructor
     ~Point();
 };
+
+std::ostream & operator << (std::ostream & out, const Point & pt);
+std::istream & operator >> (std::istream & in,        Point & pt);
 
 #endif // POINT_H
