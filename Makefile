@@ -251,14 +251,14 @@ $(CLEAN_GRAVITY):
 #						Project Files
 ##############################################################
 project: $(PROJECT)
-	@echo "project built!"
-	@powershell.exe -Command "date"
 	@powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
+	@echo "project built!"
+	@powershell.exe -Command "date"
 
 $(PROJECT): $(PROJECT_OBJS)
 	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)
