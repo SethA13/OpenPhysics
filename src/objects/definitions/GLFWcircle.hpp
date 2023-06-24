@@ -5,11 +5,12 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <cmath>
+#include "../../../dependancies/glm/glm/glm.hpp"
 
 class GLFWCircle {
 public:
-    GLFWCircle(float radius, GLint numSegments)
-        : radius(radius), numSegments(numSegments)
+    GLFWCircle(float radius, GLint numSegments, glm::vec2 position, glm::vec2 velocity, glm::vec2 direction)
+        : radius(radius), numSegments(numSegments), position(position), velocity(velocity), direction(direction)
     {
         calculateVertices();
     }
@@ -38,10 +39,48 @@ public:
         return radius;
     }
 
+    const glm::vec2& getPosition() const
+    {
+        return position;
+    }
+
+    const glm::vec2& getVelocity() const
+    {
+        return velocity;
+    }
+
+    const glm::vec2& getDirection() const
+    {
+        return direction;
+    }
+
+    void setPosition(const glm::vec2& newPosition)
+    {
+        position = newPosition;
+    }
+
+    void setVelocity(const glm::vec2& newVelocity)
+    {
+        velocity = newVelocity;
+    }
+
+    void setDirection(const glm::vec2& newDirection)
+    {
+        direction = newDirection;
+    }
+
+    void updatePosition(float deltaTime)
+    {
+        position += velocity * deltaTime;
+    }
+
 private:
     GLfloat radius;
     GLint numSegments;
     std::vector<GLfloat> circleVertices;
+    glm::vec2 position;
+    glm::vec2 velocity;
+    glm::vec2 direction;
 };
 
 #endif  // GLFWCIRCLE_H

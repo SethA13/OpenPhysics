@@ -48,7 +48,7 @@ MASTEROBJS = $(BASEOBJS) $(GLFWOBJS) $(GRAVITYOBJS)
  # test declaration prototypes
 ##################################
 GLUTTEST = glutTest
-GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp $(BASEOBJS)
+GLUTTEST_SRCS = $(TESTSRCSDIR)\$(GLUTTEST).cpp
 GLUTTEST_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GLUTTEST_SRCS:.cpp=.o))
 
 COLLISIONS = collisionTest
@@ -252,12 +252,13 @@ $(CLEAN_GRAVITY):
 ##############################################################
 project: $(PROJECT)
 	@echo "project built!"
-	powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
-	powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
+	@powershell.exe -Command "date"
+	@powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
+	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
+	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
+	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
+	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
+	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
 
 $(PROJECT): $(PROJECT_OBJS)
 	$(CC) $(CFLAGS) -o $(PROJBINDIR)\$@ $^ $(LDFLAGS)

@@ -21,17 +21,15 @@ int glutWindowInit(int argc, char** argv, char *windowName);
 void glutDrawCircle(const Point & center, int radius);
 
 
-void glfwCircleWindowInit(int WIDTH, int HEIGHT);
-void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle);
-void ModelInit(GLuint &shaderProgram, const Circle& circle);
-void setupCircleRendering(GLuint& vao, GLuint& vbo, GLuint &shaderProgram);
-void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram);
+void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
+void glfwCircleMainLoop(GLFWwindow* window, GLuint shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWCircle>& circles);
+void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
 void glutDisplay()
 {
     glClear(GL_COLOR_BUFFER_BIT); // blit blank display
-    Point centerpoint(float xPosition = 1040.0f/2, float yPosition = 720.0f/2);
+    Point centerpoint(1040.0f/2, 720.0f/2);
     glutDrawCircle(centerpoint, 3);
     glutSwapBuffers();
     return;
@@ -42,6 +40,7 @@ int glutWindowInit(int argc, char** argv, char *windowName)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(1040, 720);
+    glutInitWindowPosition(100, 100);
     glutCreateWindow(windowName);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glOrtho(0, 1040.0, 720.0, 0, -1, 1); // Orient and define grid
@@ -84,7 +83,7 @@ void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, windowName, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(HEIGHT, WIDTH, windowName, nullptr, nullptr);
     if (!window)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -163,32 +162,161 @@ void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glDeleteShader(fragmentShader);
 
     // Create the circle object
-    GLFWCircle circle   (0.2f,     //Radius
-                        1000);    //Numsegments
+    GLFWCircle circle1   (0.2f,             //Radius
+                         1000,              //Numsegments
+                         {0.01f, 0.02f},    //Position
+                         {0.0f, 0.002f},    //Velocity
+                         {0.0f, 0.0f});     //Direction
+
+    GLFWCircle circle2   (0.1f,             //Radius
+                         1000,              //Numsegments
+                         {-0.1f, -0.001f},  //Position
+                         {0.0f, -0.002f},   //Velocity
+                         {0.0f, 0.0f});     //Direction     
 
     // Set up vertex data and attribute pointers for circle
-    const std::vector<GLfloat>& circleVertices = circle.getVertices();
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(GLfloat), circleVertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    const std::vector<GLfloat>& circleVertices1 = circle1.getVertices();
+    const std::vector<GLfloat>& circleVertices2 = circle2.getVertices();
+    int NUMVERTOBJS = 2;
+    GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
+    glGenVertexArrays(2, VAO);
+    glGenBuffers(2, VBO);
+    
+    // Bind and setup VAO and VBO for circle1 and circle2
+    for (int i = 0; i < NUMVERTOBJS; i++)
+    {
+        glBindVertexArray(VAO[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        const std::vector<GLfloat>& circleVertices = (i == 0) ? circleVertices1 : circleVertices2;
+        // What the above line actually means;
+        /******************************************
+        const std::vector<GLfloat>& circleVertices;
+        if (i == 0) 
+        {
+            circleVertices = circleVertices1;
+        } 
+        else 
+        {
+            circleVertices = circleVertices2;
+        }
+        ******************************************/
+        // But can't do it this way because it wants an itnitializer
+        glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(GLfloat), circleVertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
 
-    glfwCircleMainLoop(window, shaderProgram, VAO, circle);
+    std::vector<GLuint> VAOs = { VAO[0], VAO[1] }; // Update with your VAOs
+    std::vector<GLuint> VBOs = {VBO[0], VBO[1]};
+    std::vector<GLFWCircle> circles = { circle1, circle2 }; // Update with your circles
+
+    glfwCircleMainLoop(window, shaderProgram, VAOs, circles);
 
     //cleanup on shutdown
-    GLFWCleanup(VAO, VBO, shaderProgram);
+    GLFWCleanup(VAOs, VBOs, shaderProgram);
     return;
 }
 
-void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle)
+void glfwCircleMainLoop(GLFWwindow* window, GLuint shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWCircle>& circles)
 {
-        // Main loop
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Check and call events
+        glfwPollEvents();
+
+        // Clear the screen
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Use the shader program
+        glUseProgram(shaderProgram);
+
+        // Update positions of all circles
+        for (auto& circle : circles)
+        {
+            circle.updatePosition(1);
+        }
+
+        // Perform collision detection and handling
+        for (size_t i = 0; i < circles.size() - 1; ++i)
+        {
+            for (size_t j = i + 1; j < circles.size(); ++j)
+            {
+                auto& circle1 = circles[i];
+                auto& circle2 = circles[j];
+
+                // Calculate distance between the centers of the circles
+                glm::vec2 center1 = circle1.getPosition();
+                glm::vec2 center2 = circle2.getPosition();
+                float distance = glm::distance(center1, center2);
+
+                // Check for collision
+                if (distance < circle1.getRadius() + circle2.getRadius())
+                {
+                    // Circles have collided
+
+                    // Reverse the direction of both circles
+                    glm::vec2 newDirection1 = -circle1.getDirection();
+                    glm::vec2 newDirection2 = -circle2.getDirection();
+                    circle1.setDirection(newDirection1);
+                    circle2.setDirection(newDirection2);
+                }
+            }
+        }
+
+        // Draw the circles
+        for (size_t i = 0; i < circles.size(); ++i)
+        {
+            const auto& circle = circles[i];
+
+            // Update model matrix for the current circle
+            glm::mat4 modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(circle.getPosition(), 0.0f));
+            GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+            glBindVertexArray(VAOs[i]);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, circle.getVertices().size() / 2);
+        }
+
+        glBindVertexArray(0);
+        // Swap the buffers
+        glfwSwapBuffers(window);
+    }
+    return;
+}
+
+
+void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram)
+{
+    // Clean up resources
+    for (size_t i = 0; i < VAOs.size(); i++)
+    {
+        glDeleteVertexArrays(VAOs.size(), &VAOs[i]);
+        glDeleteBuffers(VBOs.size(), &VBOs[i]);
+    }
+    glDeleteProgram(shaderProgram);
+
+    // Terminate GLFW
+    glfwTerminate();
+}
+
+
+/**********************************************************
+ * UNUSED FUNCTION VERSIONS
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, GLFWCircle circle1, GLFWCircle circle2)
+{
+    // Main loop
     while (!glfwWindowShouldClose(window))
     {
         // Check and call events
@@ -211,25 +339,39 @@ void glfwCircleMainLoop(GLFWwindow* &window, GLuint shaderProgram, GLuint VAO, G
         GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model);
 
+        // Update positions of both circles
+        circle1.updatePosition(1);
+        circle2.updatePosition(1);
+
+        // Calculate distance between the centers of the circles
+        glm::vec2 center1 = circle1.getPosition();
+        glm::vec2 center2 = circle2.getPosition();
+        float distance = glm::distance(center1, center2);
+
+        // Check for collision
+        if (distance < circle1.getRadius() + circle2.getRadius()) 
+        {
+            // Circles have collided
+
+            // Reverse the direction of both circles
+            glm::vec2 newDirection1 = -circle1.getDirection();
+            glm::vec2 newDirection2 = -circle2.getDirection();
+            circle1.setDirection(newDirection1);
+            circle2.setDirection(newDirection2);
+        }
+
         // Draw the circle
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, circle.getVertices().size() / 2);
-        glBindVertexArray(0);
+        for (int i = 0; i < sizeof(VAO); i++)
+        {
+            glBindVertexArray(VAO[1]);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, circle1.getVertices().size() / 2);
+            glBindVertexArray(0);
+        }
+        
 
         // Swap the buffers
         glfwSwapBuffers(window);
     }
     return;
 }
-
-
-void GLFWCleanup(GLuint &VAO, GLuint &VBO, GLuint &shaderProgram)
-{
-    // Clean up resources
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
-
-    // Terminate GLFW
-    glfwTerminate();
-}
+**********************************************************/

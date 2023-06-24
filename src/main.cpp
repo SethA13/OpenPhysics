@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 		int windowHeight = 800;
 		int windowWidth = 800;
 	};
-	std::list<std::string> initEntries{"circle", "rectangle", "glut"};
+	std::list<std::string> initEntries{"glfw", "rectangle", "glut"};
 	std::string initType ="";
 
 	// check if there is more than one argument and use the second one
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	std::cout << "init Type declared: " << initType << std::endl;
 
 	struct windowContext displayPort;
-	if (initType == "circle" || initType == "CIRCLE")
+	if (initType == "glfw" || initType == "GLFW")
 	{
 		std::cout << "Creating GLFW window for static circle..." << std::endl;
 		// This is stupid to do, but I can't get getline() to play nice with char arrays so here we are.
