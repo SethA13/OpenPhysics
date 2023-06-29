@@ -68,7 +68,7 @@ private:
 };
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 1080;
+const GLuint WIDTH = 800, HEIGHT = 900;
 
 // Rectangle parameters
 const GLfloat width = 0.2f;

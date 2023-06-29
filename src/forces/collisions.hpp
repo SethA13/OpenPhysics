@@ -2,16 +2,21 @@
 #define COLLISIONS_H
 
 #include <stdio.h>
+#include <vector>
+#include "../objects/definitions/GLFWobject.hpp"
+
+#include "../../dependancies/glm/glm/glm.hpp"
+#include "../../dependancies/glm/glm/gtx/string_cast.hpp"
 
 
 /****************
  * PROTOTYPES
 ****************/
 // collision detection
-bool isColliding(char *);
+void handleCollision(GLFWobject &object1, GLFWobject &object2);
 
 // circle formulas
-bool circleToCircleCollision(char *);
+void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2);
 bool circleToRectangleCollision(char *);
 bool circleToPointCollision(char *);
 
@@ -25,45 +30,48 @@ bool pointToPointCollision(char *);
 // sat Theorem for collisions not between these 3
 bool satTheorem(char *);
 
+void checkWindowBounds();
+
 
 
 // check if two objects are colliding
 // TODO: find more elegant solution than if statements
-bool isColliding(char *objects)
+void  handleCollision(GLFWobject &object1, GLFWobject &object2)
 {
     // Check circle cases
-    if ((objects[1] == 'c') && objects[2] == 'c')
+    if ((object1.getShape() == 'c') && object2.getShape() == 'c')
     {
-       return circleToCircleCollision(objects);
+        circleToCircleCollision(object1, object2);
+        return;
     }
-    else if (((objects[1] == 'c') && objects[2] == 'r') || ((objects[1] == 'r') && objects[2] == 'c'))
+    else if (((object1.getShape() == 'c') && object2.getShape() == 'r') || ((object1.getShape() == 'r') && object2.getShape() == 'c'))
     {
-        return circleToRectangleCollision(objects);
+        return;
     }
-    else if (((objects[1] == 'c') && objects[2] == 'p') || ((objects[1] == 'p') && objects[2] == 'c'))
+    else if (((object1.getShape() == 'c') && object2.getShape() == 'p') || ((object1.getShape() == 'p') && object2.getShape() == 'c'))
     {
-        return circleToPointCollision(objects);
+        return;
     }
 
     // Check rectangle cases
-    else if ((objects[1] == 'r') && objects[2] == 'r')
+    else if ((object1.getShape() == 'r') && object2.getShape() == 'r')
     {
-        return rectangleToRectangleCollision(objects);
+        return;
     }
-    else if (((objects[1] == 'r') && objects[2] == 'p') || ((objects[1] == 'p') && objects[2] == 'r'))
+    else if (((object1.getShape() == 'r') && object2.getShape() == 'p') || ((object1.getShape() == 'p') && object2.getShape() == 'r'))
     {
-        return rectangleToPointCollision(objects);
+        return;
     }
 
     // Check point case
-    else if ((objects[1] == 'p') && objects[2] == 'p')
+    else if ((object1.getShape() == 'p') && object2.getShape() == 'p')
     {
-        return pointToPointCollision(objects);
+        return;
     }
 
     // Handle extraneous case
     else
-        return satTheorem(objects);
+        return;
 }
 
 
@@ -71,9 +79,24 @@ bool isColliding(char *objects)
  * Handle collision types
  * These are hardcoded types
 *******************************/
-bool circleToCircleCollision(char *objects)
+void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2)
 {
-    return 0;
+    // Calculate distance between the centers of the circles
+    glm::vec2 center1 = circle1.getPosition();
+    glm::vec2 center2 = circle2.getPosition();
+    float distance = glm::distance(center1, center2);
+
+    // Check for collision
+    if (distance <= circle1.getSize() + circle2.getSize())
+    {
+        // Circles have collided
+
+        // Reverse the direction of both circles
+        glm::vec2 newVelocity1 = -circle1.getVelocity();
+        glm::vec2 newVelocity2 = -circle2.getVelocity();
+        circle1.setVelocity(newVelocity1);
+        circle2.setVelocity(newVelocity2);
+    }
 }
 
 bool circleToRectangleCollision(char *objects)
@@ -106,6 +129,47 @@ bool pointToPointCollision(char *objects)
 bool satTheorem(char *objects)
 {
     return 0;
+}
+
+void checkWindowBounds(GLFWobject object)
+{
+    // std::cout << "Circle" << i + 1 << " Radius; " << object.getSize() << std::endl;
+    glm::vec2 center = object.getPosition();
+
+    // Circle bounds check
+    // Check left-most position
+    if ((center[0]) + object.getSize() >= 1.0f) // At edge of window
+    {
+        // Change x direction
+        std::cout << "left bounce" << std::endl;
+        std::cout << "Circle" << " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        object.setXVelocity((object.getXVelocity() * -1.0f));
+    }
+    // Check right-most position
+    if ((center[0]) - object.getSize() <= -1.0f) // At edge of window
+    {
+        // Change x direction
+        std::cout << "right bounce" << std::endl;
+        std::cout << "Circle"<< " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        object.setXVelocity((object.getXVelocity() * -1.0f));
+    }
+
+    // Check top-most position
+    if ((center[1]) + object.getSize() >= 1.0f) // At edge of window
+    {
+        // Change x direction
+        std::cout << "top bounce" << std::endl;
+        std::cout << "Circle"<< " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        object.setYVelocity((object.getYVelocity() * -1.0f));
+    }
+    // Check bottom-most position
+    if ((center[1]) - object.getSize() <= -1.0f) // At edge of window
+    {
+        // Change y direction
+        std::cout << "bottom bounce" << std::endl;
+        std::cout << "Circle"" bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        object.setYVelocity((object.getYVelocity() * -1.0f));
+    }
 }
 
 #endif // COLLISIONS_H

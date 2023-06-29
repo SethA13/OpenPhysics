@@ -34,11 +34,13 @@ BASEOBJS = $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDI
 
 GLFWCIRCLEOBJ = GLFWcircle
 GLFWRECTOBJ = GLFWrectangle
+GLFWOBJECT = GLFWobject
 
-GLFWOBJS = $(OBJCPPDIR)\$(GLFWCIRCLEOBJ).cpp $(OBJCPPDIR)\$(GLFWRECTOBJ).cpp
+GLFWOBJS = $(OBJCPPDIR)\$(GLFWCIRCLEOBJ).cpp $(OBJCPPDIR)\$(GLFWRECTOBJ).cpp 
 
 GRAVCIRCLEOBJ = gravityGLFWcircle
 GRAVRECTOBJ = gravityGLFWrectangle
+
 
 GRAVITYOBJS = $(OBJHPPDIR)\$(GRAVCIRCLEOBJ).hpp $(OBJHPPDIR)\$(GRAVRECTOBJ).hpp
 
@@ -89,7 +91,7 @@ CLEAN_GRAVITY = clean_gravity
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDIR)\$(RECTOBJ).cpp $(OBJCPPDIR)\$(OBJOBJ).cpp $(OBJCPPDIR)\$(VELOCITYOBJ).cpp 
+PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJHPPDIR)\$(GLFWOBJECT).hpp
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
@@ -252,11 +254,7 @@ $(CLEAN_GRAVITY):
 ##############################################################
 project: $(PROJECT)
 	@powershell.exe -Command "Move-Item -Path '$(PROJSRCSDIR)\$(PROJECT).o' -Destination '$(PROJOBJSDIR)\$(PROJECT).o' -force"
-	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(CIRCLEOBJ).o' -Destination '$(PROJOBJSDIR)\$(CIRCLEOBJ).o' -force"
 	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(POINTOBJ).o' -Destination '$(PROJOBJSDIR)\$(POINTOBJ).o' -force"
-	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(RECTOBJ).o' -Destination '$(PROJOBJSDIR)\$(RECTOBJ).o' -force"
-	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(OBJOBJ).o' -Destination '$(PROJOBJSDIR)\$(OBJOBJ).o' -force"
-	@powershell.exe -Command "Move-Item -Path '$(OBJCPPDIR)\$(VELOCITYOBJ).o' -Destination '$(PROJOBJSDIR)\$(VELOCITYOBJ).o' -force"
 	@echo "project built!"
 	@powershell.exe -Command "date"
 
@@ -268,8 +266,4 @@ $(PROJECT): $(PROJECT_OBJS)
 
 $(CLEAN_PROJECT):
 	del /Q $(PROJOBJSDIR)\$(PROJECT).o $(PROJBINDIR)\$(PROJECT).exe
-	del /Q $(PROJOBJSDIR)\$(CIRCLEOBJ).o
 	del /Q $(PROJOBJSDIR)\$(POINTOBJ).o
-	del /Q $(PROJOBJSDIR)\$(RECTOBJ).o
-	del /Q $(PROJOBJSDIR)\$(OBJOBJ).o
-	del /Q $(PROJOBJSDIR)\$(VELOCITYOBJ).o
