@@ -71,6 +71,7 @@ void glutDrawCircle(const Point & center, int radius)
 
 void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 {
+    std::cout << "Init called!" << std::endl;
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -162,6 +163,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    std::cout << "Shaders deleted!" << std::endl;
     std::vector<GLFWobject> objects; // Update with all objects
 
 
@@ -186,8 +188,8 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 
     // add in rectangle for testing purposes
     GLFWobject rectangle1   ('r',               //Shape 
-                            0.1f,               //Size
-                            1000,               //NumSegments
+                            0.3f,               //Size
+                            30000,               //NumSegments
                             {0.6f, 0.6f},       //Starting Position -- {x,y}
                             {0.0f, 0.0f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
@@ -204,7 +206,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
                             FALSE);             //Gravity
     objects.push_back(point1);
 
-
+    std::cout << "Objects made, added to vector" << std::endl;
 
     std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
 
@@ -214,10 +216,11 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     int pointCounter = 0;
     for (auto& object : objects)
     {
-        objects.push_back(object);
         allVertices.push_back(object.getVertices());
     }
     
+    std::cout << "Vertices added!" << std::endl;
+
     int NUMVERTOBJS = objects.size();
     GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
     std::vector<GLuint> VAOs; // Update with VAOs
@@ -225,9 +228,8 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glGenVertexArrays(NUMVERTOBJS, VAO);
     glGenBuffers(NUMVERTOBJS, VBO);
     
-    // Bind and setup VAO and VBO for circle1 and circle2
-
-    // TODO update to go through each object, not just circles
+    // Bind and setup VAO and VBO for each object
+    std::cout << "Attempting to bind VAO/VBO..." << std::endl;
     for (int i = 0; i < NUMVERTOBJS; i++)
     {
         glBindVertexArray(VAO[i]);
@@ -238,14 +240,15 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        VAOs[i] = VAO[i];
-        VBOs[i] = VBO[i];
+        VAOs.push_back(VAO[i]);
+        VBOs.push_back(VBO[i]);
+
+        std::cout << "VAO/VBO " << i << "done!" << std::endl;
     }
 
-    std::vector<GLuint> VAOs = { VAO[0], VAO[1] }; // Update with your VAOs
-    std::vector<GLuint> VBOs = {VBO[0], VBO[1]};
-    std::vector<GLFWobject> objects = {circle1, circle2}; // Update with your circles
+    std::cout << "VAO/VBO bound, added to vector!" << std::endl;
 
+    std::cout << "Calling main loop..." << std::endl;
     glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH);
 
     //cleanup on shutdown
@@ -255,6 +258,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth)
 {
+    std::cout << "Main loop called!" << std::endl;
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -317,11 +321,10 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             glBindVertexArray(VAOs[i]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, objects[i].getVertices().size() / 2);
         }
-
-        glBindVertexArray(0);
         // Swap the buffers
         glfwSwapBuffers(window);
     }
+    glBindVertexArray(0);
     return;
 }
 

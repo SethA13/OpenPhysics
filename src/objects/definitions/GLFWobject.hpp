@@ -95,39 +95,37 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
     else if (shape == 'r' || shape == 'R')
     {
         vertices.clear();
-        vertices.reserve(12);
-        GLfloat width = size;
-        GLfloat height = size / 2.0f;
+        vertices.reserve(8);
 
         // Calculate the four corner points of the rectangle
-        GLfloat halfWidth = width / 2.0f;
-        GLfloat halfHeight = height / 2.0f;
+        std::cout << "Width; " << getWidth() << std::endl;
+        std::cout << "Height " << getHeight() << std::endl;
+        float halfWidth = getWidth() / 2.0f;
+        float halfHeight = getHeight() / 2.0f;
+
+        std::cout << "halfWidth; " << halfWidth << std::endl;
+        std::cout << "halfHeight " << halfHeight << std::endl;
 
         vertices.push_back(-halfWidth);  // Bottom-left
         vertices.push_back(-halfHeight);
-        vertices.push_back(0.0f);
+
 
         vertices.push_back(halfWidth);   // Bottom-right
         vertices.push_back(-halfHeight);
-        vertices.push_back(0.0f);
+
 
         vertices.push_back(halfWidth);   // Top-right
         vertices.push_back(halfHeight);
-        vertices.push_back(0.0f);
 
-        vertices.push_back(halfWidth);   // Top-right
-        vertices.push_back(halfHeight);
-        vertices.push_back(0.0f);
 
         vertices.push_back(-halfWidth);  // Top-left
         vertices.push_back(halfHeight);
-        vertices.push_back(0.0f);
 
-        vertices.push_back(-halfWidth);  // Bottom-left
-        vertices.push_back(-halfHeight);
-        vertices.push_back(0.0f);
+
+        std::cout << "Num Vertices; " << vertices.size() << std::endl;
     }
-        if (shape == 'p' || shape == 'P')
+
+    if (shape == 'p' || shape == 'P')
     {
         vertices.clear();
         vertices.reserve((numSegments + 1) * 2);
@@ -250,9 +248,9 @@ void GLFWobject::updatePosition(GLfloat deltaTime)
 
 void GLFWobject::applyGravity()
 {
-    if (GLFWobject::getYPosition() >= -1.0f)
+    if (GLFWobject::getYPosition() > -1.0f)
     {
-        std::cout << "GRAVITY!!!" << std::endl;
+        //std::cout << "GRAVITY!!!" << std::endl;
         velocity[1] -= GRAVITY_AMOUNT;
     }
 }
