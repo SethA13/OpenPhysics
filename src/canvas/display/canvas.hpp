@@ -162,60 +162,84 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    std::vector<GLFWobject> objects; // Update with all objects
+
 
     // Create the circle objects
-    GLFWobject circle1 ('c',                //Shape 
-                        0.2f,               //Size
-                        1000,               //NumSegments
-                        {0.0f, 0.0f},       //Starting Position -- {x,y}
-                        {0.003f, 0.003},    //Starting Velocity -- {x,y}
-                        0,                  //Rotation -- in degrees
-                        TRUE);              //Gravity
+    GLFWobject circle1      ('c',               //Shape 
+                            0.2f,               //Size
+                            1000,               //NumSegments
+                            {0.0f, 0.0f},       //Starting Position -- {x,y}
+                            {0.003f, 0.003},    //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees
+                            TRUE);              //Gravity
+    objects.push_back(circle1);
 
-    GLFWobject circle2 ('c',                //Shape 
-                        0.1f,               //Size
-                        1000,               //NumSegments
-                        {0.3f, -0.1f},      //Starting Position -- {x,y}
-                        {0.002f, -0.003f},  //Starting Velocity -- {x,y}
-                        0,                  //Rotation -- in degrees 
-                        TRUE);              //Gravity                   
+    GLFWobject circle2      ('c',               //Shape 
+                            0.1f,               //Size
+                            1000,               //NumSegments
+                            {0.3f, -0.1f},      //Starting Position -- {x,y}
+                            {0.002f, -0.003f},  //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees 
+                            TRUE);              //Gravity
+    objects.push_back(circle2);                
 
     // add in rectangle for testing purposes
+    GLFWobject rectangle1   ('r',               //Shape 
+                            0.1f,               //Size
+                            1000,               //NumSegments
+                            {0.6f, 0.6f},       //Starting Position -- {x,y}
+                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees 
+                            FALSE);             //Gravity
+    objects.push_back(rectangle1);
 
     //add in circle for testing purposes
+    GLFWobject point1       ('p',               //Shape 
+                            0.0f,               //Size
+                            1000,               //NumSegments
+                            {-0.6f, -0.6f},     //Starting Position -- {x,y}
+                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees 
+                            FALSE);             //Gravity
+    objects.push_back(point1);
 
-    // Set up vertex data and attribute pointers for circle
-    const std::vector<GLfloat>& circleVertices1 = circle1.getVertices();
-    const std::vector<GLfloat>& circleVertices2 = circle2.getVertices();
-    int NUMVERTOBJS = 2;
+
+
+    std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
+
+    // TODO: Set up vertex data and attribute pointers for each object
+    int circleCounter = 0;
+    int rectangleCounter = 0;
+    int pointCounter = 0;
+    for (auto& object : objects)
+    {
+        objects.push_back(object);
+        allVertices.push_back(object.getVertices());
+    }
+    
+    int NUMVERTOBJS = objects.size();
     GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
-    glGenVertexArrays(2, VAO);
-    glGenBuffers(2, VBO);
+    std::vector<GLuint> VAOs; // Update with VAOs
+    std::vector<GLuint> VBOs; // update with VBOs
+    glGenVertexArrays(NUMVERTOBJS, VAO);
+    glGenBuffers(NUMVERTOBJS, VBO);
     
     // Bind and setup VAO and VBO for circle1 and circle2
+
+    // TODO update to go through each object, not just circles
     for (int i = 0; i < NUMVERTOBJS; i++)
     {
         glBindVertexArray(VAO[i]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-        const std::vector<GLfloat>& circleVertices = (i == 0) ? circleVertices1 : circleVertices2;
-        // What the above line actually means;
-        /******************************************
-        const std::vector<GLfloat>& circleVertices;
-        if (i == 0) 
-        {
-            circleVertices = circleVertices1;
-        } 
-        else 
-        {
-            circleVertices = circleVertices2;
-        }
-        ******************************************/
-        // But can't do it this way because it wants an itnitializer
-        glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(GLfloat), circleVertices.data(), GL_STATIC_DRAW);
+        const std::vector<GLfloat>& vertices = allVertices[i];
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+        VAOs[i] = VAO[i];
+        VBOs[i] = VBO[i];
     }
 
     std::vector<GLuint> VAOs = { VAO[0], VAO[1] }; // Update with your VAOs
