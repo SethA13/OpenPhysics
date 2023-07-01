@@ -74,6 +74,26 @@ public:
         position += velocity * deltaTime;
     }
 
+    const float getXVelocity()
+    {
+        return velocity[0];
+    }
+
+    const float getYVelocity()
+    {
+        return velocity[1];
+    }
+
+    float setXVelocity(float newVelocity)
+    {
+        velocity[0] = newVelocity;
+    }
+
+    float setYVelocity(float newVelocity)
+    {
+        return velocity[1] = newVelocity;
+    }
+
 private:
     GLfloat radius;
     GLint numSegments;
@@ -81,6 +101,7 @@ private:
     glm::vec2 position;
     glm::vec2 velocity;
     glm::vec2 direction;
+    
 };
 
 #endif  // GLFWCIRCLE_H

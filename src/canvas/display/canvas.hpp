@@ -5,6 +5,7 @@
 #include "../uiHandlers/keyCallback.hpp"
 #include "../shaders/shaders.hpp"
 #include "../../objects/definitions/objectsMasterInclude.hpp"
+#include "../../forces/collisions.hpp"
 
 #include <iostream>
 #include <string>
@@ -23,7 +24,7 @@ void glutDrawCircle(const Point & center, int radius);
 
 
 void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
-void glfwCircleCollisionLoop(GLFWwindow* window, GLuint shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWCircle>& circles, int windowHeight, int windowWidth);
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth);
 void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
@@ -68,7 +69,7 @@ void glutDrawCircle(const Point & center, int radius)
 }
 
 
-void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
 {
     // Initialize GLFW
     if (!glfwInit())
@@ -162,18 +163,26 @@ void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Create the circle object
-    GLFWCircle circle1   (0.2f,             //Radius
-                         1000,              //Numsegments
-                         {0.0f, -0.5f},    //Position
-                         {0.0f, 0.002f},    //Velocity
-                         {0.0f, 0.0f});     //Direction
+    // Create the circle objects
+    GLFWobject circle1 ('c',                //Shape 
+                        0.2f,               //Size
+                        1000,               //NumSegments
+                        {0.0f, 0.0f},       //Starting Position -- {x,y}
+                        {0.003f, 0.003},    //Starting Velocity -- {x,y}
+                        0,                  //Rotation -- in degrees
+                        TRUE);              //Gravity
 
-    GLFWCircle circle2   (0.1f,             //Radius
-                         1000,              //Numsegments
-                         {0.0f, 0.5f},  //Position
-                         {0.0f, -0.002f},   //Velocity
-                         {0.0f, 0.0f});     //Direction     
+    GLFWobject circle2 ('c',                //Shape 
+                        0.1f,               //Size
+                        1000,               //NumSegments
+                        {0.3f, -0.1f},      //Starting Position -- {x,y}
+                        {0.002f, -0.003f},  //Starting Velocity -- {x,y}
+                        0,                  //Rotation -- in degrees 
+                        TRUE);              //Gravity                   
+
+    // add in rectangle for testing purposes
+
+    //add in circle for testing purposes
 
     // Set up vertex data and attribute pointers for circle
     const std::vector<GLfloat>& circleVertices1 = circle1.getVertices();
@@ -211,16 +220,16 @@ void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName)
 
     std::vector<GLuint> VAOs = { VAO[0], VAO[1] }; // Update with your VAOs
     std::vector<GLuint> VBOs = {VBO[0], VBO[1]};
-    std::vector<GLFWCircle> circles = { circle1, circle2 }; // Update with your circles
+    std::vector<GLFWobject> objects = {circle1, circle2}; // Update with your circles
 
-    glfwCircleCollisionLoop(window, shaderProgram, VAOs, circles, HEIGHT, WIDTH);
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH);
 
     //cleanup on shutdown
     GLFWCleanup(VAOs, VBOs, shaderProgram);
     return;
 }
 
-void glfwCircleCollisionLoop(GLFWwindow* window, GLuint shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWCircle>& circles, int windowHeight, int windowWidth)
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth)
 {
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -236,71 +245,53 @@ void glfwCircleCollisionLoop(GLFWwindow* window, GLuint shaderProgram, const std
         glUseProgram(shaderProgram);
 
         // Update positions of all circles
-        for (auto& circle : circles)
+        for (auto& object : objects)
         {
-            circle.updatePosition(1);
+            object.updatePosition(1);
         }
 
         // Perform collision detection and handling
-        for (size_t i = 0; i < circles.size() - 1; ++i)
+        for (size_t i = 0; i < objects.size(); i++)
         {
-            for (size_t j = i + 1; j < circles.size(); ++j)
+            checkWindowBounds(objects[i]);
+
+            for (size_t j = i + 1; j < objects.size(); ++j)
             {
-                auto& circle1 = circles[i];
-                auto& circle2 = circles[j];
-
-                // Calculate distance between the centers of the circles
-                glm::vec2 center1 = circle1.getPosition();
-                glm::vec2 center2 = circle2.getPosition();
-                float distance = glm::distance(center1, center2);
-
-                // Check for collision
-                if (distance <= circle1.getRadius() + circle2.getRadius())
-                {
-                    // Circles have collided
-
-                    // Reverse the direction of both circles
-                    glm::vec2 newDirection1 = -circle1.getDirection();
-                    glm::vec2 newDirection2 = -circle2.getDirection();
-                    circle1.setDirection(newDirection1);
-                    circle2.setDirection(newDirection2);
-
-                    glm::vec2 newVelocity1 = -circle1.getVelocity();
-                    glm::vec2 newVelocity2 = -circle2.getVelocity();
-                    circle1.setVelocity(newVelocity1);
-                    circle2.setVelocity(newVelocity2);
-                    std::cout << "Circle 1 position;" << glm::to_string(circle1.getPosition()) << std::endl;
-                }
+                handleCollision(objects[i], objects[j]);
             }
+            if (objects[i].getGravityEnable())
+            {
+                objects[i].applyGravity();
+            }
+
+            if (objects[i].getYPosition() + objects[i].getSize() <= -1.0f)
+            {
+                if (objects[i].getYVelocity() <= 0.03f && objects[i].getYVelocity() >= -0.03f)
+                {
+                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
+                    objects[i].setGravityEnable(FALSE);
+                }
+                else
+                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
+                
+            }
+            
         }
 
-        // Draw the circles
-        for (size_t i = 0; i < circles.size(); ++i)
+        // Draw the objects
+        for (size_t i = 0; i < objects.size(); ++i)
         {
-            auto& circle = circles[i];
-
-            // Update model matrix for the current circle
+            // Update model matrix for the current object
             glm::mat4 modelMatrix = glm::mat4(1.0f);
 
             // Apply translation
-            glm::vec2 circlePosition = circle.getPosition();
-
-            // Perform collision detection with window bounds
-            float radius = circle.getRadius();
-            // if (circlePosition.x - radius < 0.0f || circlePosition.x + radius > windowWidth) 
-            // {
-            //     circle.setVelocity(-(circle.getVelocity()));  // Keep the circle within the left edge
-            // }
-            // if (circlePosition.y - radius < 0.0f || circlePosition.y + radius > windowHeight) 
-            // {
-            //     circle.setVelocity(-(circle.getVelocity()));  // Keep the circle within the bottom edge
-            // }
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(circle.getPosition(), 0.0f));
+            glm::vec2 circlePosition = objects[i].getPosition();
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(objects[i].getPosition(), 0.0f));
             GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
             glBindVertexArray(VAOs[i]);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, circle.getVertices().size() / 2);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, objects[i].getVertices().size() / 2);
         }
 
         glBindVertexArray(0);

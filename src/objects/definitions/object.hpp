@@ -15,6 +15,7 @@ private:
     float rotation;
 
 public:
+    void applyGravity();
     // getter
     Point getCenterPoint() const;
     Velocity getVelocity() const;
