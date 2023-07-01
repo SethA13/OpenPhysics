@@ -21,7 +21,7 @@ float POINTSIZE = 0.005f;
 
 // Function Prototypes
 void glutDisplay();
-int glutWindowInit(int argc, char** argv, char *windowName);
+int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, bool DEBUG);
 void glutDrawCircle(const Point & center, int radius);
 
 
@@ -39,7 +39,7 @@ void glutDisplay()
     return;
 }
 
-int glutWindowInit(int argc, char** argv, char *windowName)
+int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);

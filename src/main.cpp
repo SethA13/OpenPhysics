@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		const int arrayLength = initType.length();
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
-		glutWindowInit(argc, argv, windowName);
+		glutWindowInit(argc, argv, windowHeight, windowWidth, windowName, DEBUG);
 		//not needed on return
 		delete[] windowName;
 	}
