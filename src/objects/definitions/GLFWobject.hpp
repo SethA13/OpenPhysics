@@ -40,7 +40,7 @@ public:
     GLfloat getHeight() const;
 
     const glm::vec2& getPosition() const;
-    const float getXposition() const;
+    const float getXPosition() const;
     const float getYPosition() const;
     const glm::vec2& getVelocity() const;
     const GLfloat getXVelocity();
@@ -98,13 +98,8 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
         vertices.reserve(8);
 
         // Calculate the four corner points of the rectangle
-        std::cout << "Width; " << getWidth() << std::endl;
-        std::cout << "Height " << getHeight() << std::endl;
         float halfWidth = getWidth() / 2.0f;
         float halfHeight = getHeight() / 2.0f;
-
-        std::cout << "halfWidth; " << halfWidth << std::endl;
-        std::cout << "halfHeight " << halfHeight << std::endl;
 
         vertices.push_back(-halfWidth);  // Bottom-left
         vertices.push_back(-halfHeight);
@@ -171,7 +166,7 @@ const glm::vec2& GLFWobject::getPosition() const
     return position;
 }
 
-const float GLFWobject::getXposition() const
+const float GLFWobject::getXPosition() const
 {
     return position[0];
 }

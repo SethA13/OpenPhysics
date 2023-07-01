@@ -24,7 +24,7 @@ void glutDrawCircle(const Point & center, int radius);
 
 
 void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth);
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG);
 void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
@@ -69,9 +69,13 @@ void glutDrawCircle(const Point & center, int radius)
 }
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
 {
-    std::cout << "Init called!" << std::endl;
+    if (DEBUG == TRUE)
+        {
+            std::cout << "Init called!" << std::endl;
+        }
+        
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -163,7 +167,11 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    std::cout << "Shaders deleted!" << std::endl;
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Shaders deleted!" << std::endl;
+    }
+        
     std::vector<GLFWobject> objects; // Update with all objects
 
 
@@ -204,9 +212,12 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
                             {0.0f, 0.0f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
                             FALSE);             //Gravity
-    objects.push_back(point1);
-
-    std::cout << "Objects made, added to vector" << std::endl;
+    //objects.push_back(point1);
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Objects made, added to vector" << std::endl;
+    }
+        
 
     std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
 
@@ -219,7 +230,11 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
         allVertices.push_back(object.getVertices());
     }
     
-    std::cout << "Vertices added!" << std::endl;
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Vertices added!" << std::endl;
+    }
+        
 
     int NUMVERTOBJS = objects.size();
     GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
@@ -229,7 +244,11 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glGenBuffers(NUMVERTOBJS, VBO);
     
     // Bind and setup VAO and VBO for each object
-    std::cout << "Attempting to bind VAO/VBO..." << std::endl;
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Attempting to bind VAO/VBO..." << std::endl;
+    }
+        
     for (int i = 0; i < NUMVERTOBJS; i++)
     {
         glBindVertexArray(VAO[i]);
@@ -242,23 +261,33 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
         glBindVertexArray(0);
         VAOs.push_back(VAO[i]);
         VBOs.push_back(VBO[i]);
-
-        std::cout << "VAO/VBO " << i << "done!" << std::endl;
+        if (DEBUG == TRUE)
+        {
+            std::cout << "VAO/VBO " << i << " done!" << std::endl;
+        }
+            
     }
 
-    std::cout << "VAO/VBO bound, added to vector!" << std::endl;
+    if (DEBUG == TRUE)
+    {
+        std::cout << "VAO/VBO bound, added to vector!" << std::endl;
+        std::cout << "Calling main loop..." << std::endl;
+    }
 
-    std::cout << "Calling main loop..." << std::endl;
-    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH);
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, DEBUG);
 
     //cleanup on shutdown
     GLFWCleanup(VAOs, VBOs, shaderProgram);
     return;
 }
 
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth)
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG)
 {
-    std::cout << "Main loop called!" << std::endl;
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Main loop called!" << std::endl;
+    }
+        
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -281,11 +310,11 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         // Perform collision detection and handling
         for (size_t i = 0; i < objects.size(); i++)
         {
-            checkWindowBounds(objects[i]);
+            checkWindowBounds(objects[i], DEBUG);
 
             for (size_t j = i + 1; j < objects.size(); ++j)
             {
-                handleCollision(objects[i], objects[j]);
+                handleCollision(objects[i], objects[j], DEBUG);
             }
             if (objects[i].getGravityEnable())
             {
