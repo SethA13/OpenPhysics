@@ -41,6 +41,12 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG);
 // TODO: find more elegant solution than if statements
 void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
 {
+    if (DEBUG == TRUE)
+    {
+        std::cout << "Object 1; " << object1.getShape() << std::endl;
+        std::cout << "Object 2; " << object2.getShape() << std::endl;
+    }
+    
     // Check circle cases
     if ((object1.getShape() == 'c' && object2.getShape() == 'c') || (object1.getShape() == 'C' && object2.getShape() == 'C'))
     {
@@ -53,7 +59,6 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     }
     else if ((object1.getShape() == 'c' && object2.getShape() == 'r') || ((object1.getShape() == 'r') && object2.getShape() == 'c'))
     {
-        DEBUG = TRUE;
         if (DEBUG == TRUE)
         {
             std::cout << "Circle - Rectangle check..." << std::endl;
@@ -156,8 +161,6 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
     if (distance <= circle1.getSize() + circle2.getSize())
     {
         // Circles have collided
-        //std::cout << "Circle - Circle collision!" << std::endl;
-
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
@@ -168,71 +171,107 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
 
 void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool DEBUG)
 {
-    // Initial testing positions
-    float testXSide = circle.getXPosition();
-    float testYSide = circle.getYPosition();
+    // Calculate the closest point on the rectangle to the circle
+    glm::vec2 rectPosition = rectangle.getPosition();
+    glm::vec2 closestPoint;
 
-    // Test for closest side
+    closestPoint.x = glm::clamp(circle.getPosition().x, rectPosition.x - rectangle.getWidth() / 2.0f, rectPosition.x + rectangle.getWidth() / 2.0f);
+    closestPoint.y = glm::clamp(circle.getPosition().y, rectPosition.y - rectangle.getHeight() / 2.0f, rectPosition.y + rectangle.getHeight() / 2.0f);
 
-    // Left edge
-    if (circle.getXPosition() < rectangle.getXPosition())
-    {
-        testXSide = rectangle.getXPosition();
-    }
-    // Right edge
-    else if (circle.getXPosition() > rectangle.getXPosition() + rectangle.getWidth())
-    {
-        testXSide = rectangle.getXPosition() + rectangle.getWidth();
-    }
-
-    // Top edge
-    if (circle.getYPosition() < rectangle.getYPosition())
-    {
-        testYSide = rectangle.getYPosition();
-    }
-    // Bottom edge
-    else if (circle.getYPosition() > rectangle.getYPosition() + rectangle.getHeight())
-    {
-        testYSide = rectangle.getYPosition() + rectangle.getHeight();
-    }
-
-    float xDistance = testXSide - circle.getXPosition();
-    float yDistance = testYSide - circle.getYPosition();
-    float distance = sqrt((xDistance * xDistance) + (yDistance * yDistance));
-    
+    // Check if the closest point is within the circle
+    float distance = glm::distance(circle.getPosition(), closestPoint);
     if (distance <= circle.getSize())
     {
-        // TODO handle collision
-
-        // for now print that it collided for testing purposes
-        if (DEBUG == TRUE)
-        {
-            std::cout << "Circle - Rectangle collision!" << std::endl;
-        }
-        rectangle.setVelocity(- rectangle.getVelocity());
-        circle.setVelocity(- circle.getVelocity());
+        // Circle and rectangle have collided
+        // Reverse the direction of the circle
+        glm::vec2 newVelocity = -circle.getVelocity();
+        circle.setVelocity(newVelocity);
+        newVelocity = -rectangle.getVelocity();
+        rectangle.setVelocity(newVelocity);
     }
-    
     return;
 }
 
 void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
 {
+    DEBUG = TRUE;
+
+    float distance = glm::distance(circle.getPosition(), point.getPosition());
+    if (distance <= circle.getSize())
+    {
+        if (DEBUG == TRUE)
+        {
+            std::cout << "Circle - Point Collision!" << std::endl;
+        }
+        circle.setXVelocity(- circle.getXVelocity());
+        point.setXVelocity(- point.getXVelocity());
+        circle.setYVelocity(- circle.getYVelocity());
+        point.setYVelocity(- point.getYVelocity());
+    }
+
+    
     return;
 }
 
 void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle2, bool DEBUG)
 {
+    // Calculate the AABB (Axis-Aligned Bounding Box) for each rectangle
+    glm::vec2 rect1Position = rectangle1.getPosition();
+    glm::vec2 rect2Position = rectangle2.getPosition();
+    float rect1Left = rect1Position.x - rectangle1.getWidth() / 2.0f;
+    float rect1Right = rect1Position.x + rectangle1.getWidth() / 2.0f;
+    float rect1Top = rect1Position.y + rectangle1.getHeight() / 2.0f;
+    float rect1Bottom = rect1Position.y - rectangle1.getHeight() / 2.0f;
+
+    float rect2Left = rect2Position.x - rectangle2.getWidth() / 2.0f;
+    float rect2Right = rect2Position.x + rectangle2.getWidth() / 2.0f;
+    float rect2Top = rect2Position.y + rectangle2.getHeight() / 2.0f;
+    float rect2Bottom = rect2Position.y - rectangle2.getHeight() / 2.0f;
+
+    // Check for overlap in the x-axis and y-axis
+    if (rect1Left <= rect2Right && rect1Right >= rect2Left && rect1Top >= rect2Bottom && rect1Bottom <= rect2Top)
+    {
+        // Rectangles have collided
+        // Reverse the direction of both rectangles
+        glm::vec2 newVelocity1 = -rectangle1.getVelocity();
+        glm::vec2 newVelocity2 = -rectangle2.getVelocity();
+        rectangle1.setVelocity(newVelocity1);
+        rectangle2.setVelocity(newVelocity2);
+    }
     return;
 }
 
 void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DEBUG)
 {
+    // Calculate the AABB (Axis-Aligned Bounding Box) for the rectangle
+    glm::vec2 rectPosition = rectangle.getPosition();
+    float rectLeft = rectPosition.x - rectangle.getWidth() / 2.0f;
+    float rectRight = rectPosition.x + rectangle.getWidth() / 2.0f;
+    float rectTop = rectPosition.y + rectangle.getHeight() / 2.0f;
+    float rectBottom = rectPosition.y - rectangle.getHeight() / 2.0f;
+
+    // Check if the point is within the rectangle
+    glm::vec2 pointPosition = point.getPosition();
+    if (pointPosition.x >= rectLeft && pointPosition.x <= rectRight && pointPosition.y >= rectBottom && pointPosition.y <= rectTop)
+    {
+        // Point is inside the rectangle
+        // Reverse the direction of both the rectangle and the point
+        glm::vec2 newVelocity1 = -rectangle.getVelocity();
+        glm::vec2 newVelocity2 = -point.getVelocity();
+        rectangle.setVelocity(newVelocity1);
+        point.setVelocity(newVelocity2);
+    }
     return;
 }
 
 void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG)
 {
+    if (point1.getPosition() == point2.getPosition())
+    {
+        point1.setVelocity(- point1.getVelocity());
+        point2.setVelocity(- point2.getVelocity());
+    }
+    
     return;
 }
 /******************************
@@ -294,5 +333,17 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG)
         object.setYVelocity((object.getYVelocity() * -1.0f));
     }
 }
+
+
+/**********
+ * float circleXDistance = abs(circle.getXPosition() - rectangle.getXPosition());
+    float circleYDistance = abs(circle.getYPosition() - rectangle.getYPosition());
+    float cornerDistance = (((circleXDistance - rectangle.getWidth() / 2) * (circleXDistance - rectangle.getWidth() / 2)) + ((circleYDistance - rectangle.getHeight() / 2) * (circleYDistance - rectangle.getHeight() / 2)));
+
+    if ((circleXDistance <= (rectangle.getWidth() / 2)) || (circleYDistance <= (rectangle.getHeight() / 2)))
+    {
+        //TODO handle collision
+    }
+*/
 
 #endif // COLLISIONS_H

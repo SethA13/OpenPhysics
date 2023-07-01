@@ -115,17 +115,20 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
 
         vertices.push_back(-halfWidth);  // Top-left
         vertices.push_back(halfHeight);
-
-
-        std::cout << "Num Vertices; " << vertices.size() << std::endl;
     }
 
     if (shape == 'p' || shape == 'P')
     {
         vertices.clear();
-        vertices.reserve(2);
+        vertices.reserve((numSegments + 1) * 2);
         vertices.push_back(0.0f); // Center point
         vertices.push_back(0.0f);
+        for (int i = 0; i <= numSegments; ++i)
+        {
+            GLfloat theta = 2.0f * 3.14159f * static_cast<GLfloat>(i) / numSegments;
+            vertices.push_back(size * std::cos(theta));
+            vertices.push_back(size * std::sin(theta));
+        }
     }
      
 }

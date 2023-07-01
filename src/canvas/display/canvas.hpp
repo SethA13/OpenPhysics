@@ -17,6 +17,8 @@
 #include "../../../dependancies/glm/glm/gtc/type_ptr.hpp"
 #include "../../../dependancies/glm/glm/gtx/string_cast.hpp"
 
+float POINTSIZE = 0.005f;
+
 // Function Prototypes
 void glutDisplay();
 int glutWindowInit(int argc, char** argv, char *windowName);
@@ -175,11 +177,11 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
     std::vector<GLFWobject> objects; // Update with all objects
 
 
-    // Create the circle objects
+    // add in circles for testing purposes
     GLFWobject circle1      ('c',               //Shape 
-                            0.2f,               //Size
+                            0.1f,               //Size
                             1000,               //NumSegments
-                            {0.0f, 0.0f},       //Starting Position -- {x,y}
+                            {0.85f, 0.5f},       //Starting Position -- {x,y}
                             {0.003f, 0.003},    //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees
                             TRUE);              //Gravity
@@ -194,25 +196,41 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
                             TRUE);              //Gravity
     objects.push_back(circle2);                
 
-    // add in rectangle for testing purposes
+    // add in rectangles for testing purposes
     GLFWobject rectangle1   ('r',               //Shape 
                             0.3f,               //Size
-                            30000,               //NumSegments
+                            1000,               //NumSegments
                             {0.6f, 0.6f},       //Starting Position -- {x,y}
                             {0.0f, 0.0f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
-                            FALSE);             //Gravity
+                            TRUE);             //Gravity
     objects.push_back(rectangle1);
-
-    //add in circle for testing purposes
-    GLFWobject point1       ('p',               //Shape 
-                            0.0f,               //Size
+    GLFWobject rectangle2   ('r',               //Shape 
+                            0.3f,               //Size
                             1000,               //NumSegments
-                            {-0.6f, -0.6f},     //Starting Position -- {x,y}
-                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
+                            {-0.3f, -0.2f},       //Starting Position -- {x,y}
+                            {0.003f, 0.005f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
-                            FALSE);             //Gravity
-    //objects.push_back(point1);
+                            TRUE);             //Gravity
+    objects.push_back(rectangle2);
+
+    //add in points for testing purposes
+    GLFWobject point1       ('p',               //Shape 
+                            POINTSIZE,            //Size
+                            1000,               //NumSegments
+                            {0.0f, 0.0f},       //Starting Position -- {x,y}
+                            {0.001f, 0.002f},       //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees 
+                            TRUE);             //Gravity
+    objects.push_back(point1);
+    GLFWobject point2       ('p',               //Shape 
+                            POINTSIZE,            //Size
+                            1000,               //NumSegments
+                            {-1.0f, 0.8f},       //Starting Position -- {x,y}
+                            {0.005f, -0.004f},       //Starting Velocity -- {x,y}
+                            0,                  //Rotation -- in degrees 
+                            TRUE);             //Gravity
+    objects.push_back(point2);
     if (DEBUG == TRUE)
     {
         std::cout << "Objects made, added to vector" << std::endl;
@@ -310,10 +328,20 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         // Perform collision detection and handling
         for (size_t i = 0; i < objects.size(); i++)
         {
+            if (DEBUG == TRUE)
+            {
+                std::cout << "Current object to check window bounds; " << objects[i].getShape() << std::endl;
+            }
+            
             checkWindowBounds(objects[i], DEBUG);
 
-            for (size_t j = i + 1; j < objects.size(); ++j)
+            for (size_t j = i + 1; j < objects.size(); j++)
             {
+                if (DEBUG == TRUE)
+                {
+                    std::cout << "Handling collisions for " << objects[i].getShape() << " and " << objects[j].getShape() << std::endl;
+                }
+                
                 handleCollision(objects[i], objects[j], DEBUG);
             }
             if (objects[i].getGravityEnable())
