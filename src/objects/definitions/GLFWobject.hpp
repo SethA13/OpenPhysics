@@ -128,7 +128,7 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
     if (shape == 'p' || shape == 'P')
     {
         vertices.clear();
-        vertices.reserve((numSegments + 1) * 2);
+        vertices.reserve(2);
         vertices.push_back(0.0f); // Center point
         vertices.push_back(0.0f);
     }
