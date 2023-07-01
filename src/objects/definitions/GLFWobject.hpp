@@ -1,6 +1,7 @@
 #ifndef GLFWOBJECT_H
 #define GLFWOBJECT_H
 
+#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -12,6 +13,7 @@ GLfloat GRAVITY_AMOUNT = 0.0003f;
 class GLFWobject
 {
 private:
+    bool shouldApplyGravity;
     char shape;
     GLfloat size;
     GLfloat width;
@@ -23,11 +25,12 @@ private:
     GLfloat rotation;
 public:
     // Constructor declaration
-    GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation);
+    GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
 
-    void calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> vertices, GLint numSegments);
+    void calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> &vertices, GLint numSegments);
 
     // Getters
+    bool getGravityEnable();
     char getShape();
     const std::vector<GLfloat>& getVertices() const;
     // for circle radius and for width of rectangle
@@ -37,13 +40,18 @@ public:
     GLfloat getHeight() const;
 
     const glm::vec2& getPosition() const;
+    const float getXposition() const;
+    const float getYPosition() const;
     const glm::vec2& getVelocity() const;
     const GLfloat getXVelocity();
     const GLfloat getYVelocity();
     const GLfloat getRotation() const;
 
     // Setters
+    void setGravityEnable(bool flag);
     void setPosition(const glm::vec2& newPosition);
+    void setXPosition(GLfloat newXPosition);
+    void setYPosition(GLfloat newYPosition);
     void setVelocity(const glm::vec2& newVelocity);
     void setXVelocity(GLfloat newVelocity);
     void setYVelocity(GLfloat newVelocity);
@@ -58,8 +66,8 @@ public:
 };
 
 // Constructor
-GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation)
-    : shape(shape), size(size), numSegments(numSegments), position(position), velocity(velocity), rotation(rotation)
+GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity)
+    : shape(shape), size(size), numSegments(numSegments), position(position), velocity(velocity), rotation(rotation), shouldApplyGravity(shouldApplyGravity)
 {
     calculateVertices(shape, size, vertices, numSegments);
 }
@@ -69,7 +77,7 @@ GLFWobject::~GLFWobject()
 {
 }
 
-void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> vertices, GLint numSegments)
+void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> &vertices, GLint numSegments)
 {
     if (shape == 'c' || shape == 'C')
     {
@@ -119,10 +127,22 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
         vertices.push_back(-halfHeight);
         vertices.push_back(0.0f);
     }
+        if (shape == 'p' || shape == 'P')
+    {
+        vertices.clear();
+        vertices.reserve((numSegments + 1) * 2);
+        vertices.push_back(0.0f); // Center point
+        vertices.push_back(0.0f);
+    }
      
 }
 
 // Getters
+bool GLFWobject::getGravityEnable()
+{
+    return shouldApplyGravity;
+}
+
 char GLFWobject::getShape()
 {
     return shape;
@@ -153,6 +173,16 @@ const glm::vec2& GLFWobject::getPosition() const
     return position;
 }
 
+const float GLFWobject::getXposition() const
+{
+    return position[0];
+}
+
+const float GLFWobject::getYPosition() const
+{
+    return position[1];
+}
+
 const glm::vec2& GLFWobject::getVelocity() const
 {
     return velocity;
@@ -174,9 +204,23 @@ const GLfloat GLFWobject::getRotation() const
 }
 
 // Setters
+void GLFWobject::setGravityEnable(bool flag)
+{
+    shouldApplyGravity = flag;
+}
 void GLFWobject::setPosition(const glm::vec2& newPosition)
 {
     position = newPosition;
+}
+
+void GLFWobject::setXPosition(GLfloat newXPosition)
+{
+    position[0] = newXPosition;
+}
+
+void GLFWobject::setYPosition(GLfloat newYPosition)
+{
+    position[1] = newYPosition;
 }
 
 void GLFWobject::setVelocity(const glm::vec2& newVelocity)
@@ -206,7 +250,11 @@ void GLFWobject::updatePosition(GLfloat deltaTime)
 
 void GLFWobject::applyGravity()
 {
-    velocity[1] -= GRAVITY_AMOUNT;
+    if (GLFWobject::getYPosition() >= -1.0f)
+    {
+        std::cout << "GRAVITY!!!" << std::endl;
+        velocity[1] -= GRAVITY_AMOUNT;
+    }
 }
 
 #endif // GLFWOBJECT_H

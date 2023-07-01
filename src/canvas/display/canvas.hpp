@@ -163,20 +163,26 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Create the circle object
-    GLFWobject circle1 ('c',            //Shape 
-                        0.2f,           //Size
-                        1000,           //NumSegments
-                        {0.0f, 0.0f},   //Starting Position -- {x,y}
-                        {0.03f, 0.03},  //Starting Velocity -- {x,y}
-                        0);             //Rotation -- in degrees
+    // Create the circle objects
+    GLFWobject circle1 ('c',                //Shape 
+                        0.2f,               //Size
+                        1000,               //NumSegments
+                        {0.0f, 0.0f},       //Starting Position -- {x,y}
+                        {0.003f, 0.003},    //Starting Velocity -- {x,y}
+                        0,                  //Rotation -- in degrees
+                        TRUE);              //Gravity
 
-    GLFWobject circle2 ('c',            //Shape 
-                        0.1f,           //Size
-                        1000,           //NumSegments
-                        {0.03f, 0.0f},  //Starting Position -- {x,y}
-                        {0.2f, -0.03f}, //Starting Velocity -- {x,y}
-                        0);             //Rotation -- in degrees   
+    GLFWobject circle2 ('c',                //Shape 
+                        0.1f,               //Size
+                        1000,               //NumSegments
+                        {0.3f, -0.1f},      //Starting Position -- {x,y}
+                        {0.002f, -0.003f},  //Starting Velocity -- {x,y}
+                        0,                  //Rotation -- in degrees 
+                        TRUE);              //Gravity                   
+
+    // add in rectangle for testing purposes
+
+    //add in circle for testing purposes
 
     // Set up vertex data and attribute pointers for circle
     const std::vector<GLfloat>& circleVertices1 = circle1.getVertices();
@@ -253,6 +259,23 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             {
                 handleCollision(objects[i], objects[j]);
             }
+            if (objects[i].getGravityEnable())
+            {
+                objects[i].applyGravity();
+            }
+
+            if (objects[i].getYPosition() + objects[i].getSize() <= -1.0f)
+            {
+                if (objects[i].getYVelocity() <= 0.03f && objects[i].getYVelocity() >= -0.03f)
+                {
+                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
+                    objects[i].setGravityEnable(FALSE);
+                }
+                else
+                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
+                
+            }
+            
         }
 
         // Draw the objects

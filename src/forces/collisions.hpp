@@ -17,20 +17,20 @@ void handleCollision(GLFWobject &object1, GLFWobject &object2);
 
 // circle formulas
 void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2);
-bool circleToRectangleCollision(char *);
-bool circleToPointCollision(char *);
+void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle);
+void circleToPointCollision(GLFWobject &circle, GLFWobject &point);
 
 // rectangle formulas
-bool rectangleToRectangleCollision(char *);
-bool rectangleToPointCollision(char *);
+void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle2);
+void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point);
 
 // point formula
-bool pointToPointCollision(char *);
+void pointToPointCollision(GLFWobject &point1, GLFWobject &point2);
 
 // sat Theorem for collisions not between these 3
-bool satTheorem(char *);
+void satTheorem(GLFWobject &object1, GLFWobject &object2);
 
-void checkWindowBounds();
+void checkWindowBounds(GLFWobject &object);
 
 
 
@@ -90,6 +90,7 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2)
     if (distance <= circle1.getSize() + circle2.getSize())
     {
         // Circles have collided
+        std::cout << "Circle - Circle collision!" << std::endl;
 
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
@@ -99,39 +100,39 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2)
     }
 }
 
-bool circleToRectangleCollision(char *objects)
+void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle)
 {
-    return 0;
+    return;
 }
 
-bool circleToPointCollision(char *objects)
+void circleToPointCollision(GLFWobject &circle, GLFWobject &point)
 {
-    return 0;
+    return;
 }
 
-bool rectangleToRectangleCollision(char *objects)
+void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle2)
 {
-    return 0;
+    return;
 }
 
-bool rectangleToPointCollision(char *objects)
+void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point)
 {
-    return 0;
+    return;
 }
 
-bool pointToPointCollision(char *objects)
+void pointToPointCollision(GLFWobject &point1, GLFWobject &point2)
 {
-    return 0;
+    return;
 }
 /******************************
 ******************************/
 
-bool satTheorem(char *objects)
+void satTheorem(GLFWobject &object1, GLFWobject &object2)
 {
-    return 0;
+    return;
 }
 
-void checkWindowBounds(GLFWobject object)
+void checkWindowBounds(GLFWobject &object)
 {
     // std::cout << "Circle" << i + 1 << " Radius; " << object.getSize() << std::endl;
     glm::vec2 center = object.getPosition();
@@ -141,16 +142,14 @@ void checkWindowBounds(GLFWobject object)
     if ((center[0]) + object.getSize() >= 1.0f) // At edge of window
     {
         // Change x direction
-        std::cout << "left bounce" << std::endl;
-        std::cout << "Circle" << " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        //std::cout << "left bounce" << std::endl;
         object.setXVelocity((object.getXVelocity() * -1.0f));
     }
     // Check right-most position
     if ((center[0]) - object.getSize() <= -1.0f) // At edge of window
     {
         // Change x direction
-        std::cout << "right bounce" << std::endl;
-        std::cout << "Circle"<< " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        //std::cout << "right bounce" << std::endl;
         object.setXVelocity((object.getXVelocity() * -1.0f));
     }
 
@@ -158,16 +157,15 @@ void checkWindowBounds(GLFWobject object)
     if ((center[1]) + object.getSize() >= 1.0f) // At edge of window
     {
         // Change x direction
-        std::cout << "top bounce" << std::endl;
-        std::cout << "Circle"<< " bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        // std::cout << "top bounce" << std::endl;
         object.setYVelocity((object.getYVelocity() * -1.0f));
     }
     // Check bottom-most position
     if ((center[1]) - object.getSize() <= -1.0f) // At edge of window
     {
         // Change y direction
-        std::cout << "bottom bounce" << std::endl;
-        std::cout << "Circle"" bounce at " << glm::to_string(object.getPosition()) << std::endl;
+        // std::cout << "bottom bounce" << std::endl;
+        // std::cout << "Circle"" bounce at " << glm::to_string(object.getPosition() + object.getSize()) << std::endl;
         object.setYVelocity((object.getYVelocity() * -1.0f));
     }
 }

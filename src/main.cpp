@@ -9,8 +9,8 @@ std::string checkTerminalParams(int argc, char** argv, std::string &initType, st
 
 int main(int argc, char** argv)
 {	
-	int windowHeight = 800;
-	int windowWidth = 800;
+	int windowHeight = 1000;
+	int windowWidth = 1000;
 	std::list<std::string> initEntries{"glfw", "glut"};
 	std::string initType ="";
 
