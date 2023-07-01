@@ -9,6 +9,7 @@ std::string checkTerminalParams(int argc, char** argv, std::string &initType, st
 
 int main(int argc, char** argv)
 {	
+	bool DEBUG = FALSE;
 	int windowHeight = 1000;
 	int windowWidth = 1000;
 	std::list<std::string> initEntries{"glfw", "glut"};
@@ -27,7 +28,7 @@ int main(int argc, char** argv)
 		const int arrayLength = initType.length();
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
-		glfwWindowInit(windowHeight, windowWidth, windowName);
+		glfwWindowInit(windowHeight, windowWidth, windowName, DEBUG);
 	}
 	else if (initType == "glut" || initType == "GLUT")
 	{
