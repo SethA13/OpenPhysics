@@ -34,6 +34,9 @@ void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG);
 void satTheorem(GLFWobject &object1, GLFWobject &object2, bool DEBUG);
 
 void checkWindowBounds(GLFWobject &object, bool DEBUG);
+void handleCircleBoundary(GLFWobject &circle, bool DEBUG);
+void handleRectangleBoundary(GLFWobject &point, bool DEBUG);
+void handlePointBoundary(GLFWobject &point, bool DEBUG);
 
 
 
@@ -284,11 +287,25 @@ void satTheorem(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
 
 void checkWindowBounds(GLFWobject &object, bool DEBUG)
 {
-    glm::vec2 center = object.getPosition();
+    if (object.getShape() == 'c')
+    {
+        handleCircleBoundary(object, DEBUG);
+    }
+    else if (object.getShape() == 'r')
+    {
+        handleRectangleBoundary(object, DEBUG);
+    }
+    else if (object.getShape() == 'p')
+    {
+        handlePointBoundary(object, DEBUG);
+    }
+}
 
-    // Circle bounds check
-    // Check left-most position
-    if ((center[0]) + object.getSize() >= 1.0f) // At edge of window
+void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
+{
+    glm::vec2 center = circle.getPosition();
+    // Check right-most position
+    if ((center[0]) + circle.getSize() >= 1.0f) // At edge of window
     {
         // Change x direction
         if (DEBUG == TRUE)
@@ -296,10 +313,10 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG)
             std::cout << "left bounce" << std::endl;
         }
             
-        object.setXVelocity((object.getXVelocity() * -1.0f));
+        circle.setXVelocity((circle.getXVelocity() * -1.0f));
     }
-    // Check right-most position
-    if ((center[0]) - object.getSize() <= -1.0f) // At edge of window
+    // Check left-most position
+    if ((center[0]) - circle.getSize() <= -1.0f) // At edge of window
     {
         // Change x direction
         if (DEBUG == TRUE)
@@ -307,11 +324,11 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG)
             std::cout << "right bounce" << std::endl;
         }
             
-        object.setXVelocity((object.getXVelocity() * -1.0f));
+        circle.setXVelocity((circle.getXVelocity() * -1.0f));
     }
 
     // Check top-most position
-    if ((center[1]) + object.getSize() >= 1.0f) // At edge of window
+    if ((center[1]) + circle.getSize() >= 1.0f) // At edge of window
     {
         // Change x direction
         if (DEBUG == TRUE)
@@ -319,10 +336,10 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG)
             std::cout << "top bounce" << std::endl;
         }
             
-        object.setYVelocity((object.getYVelocity() * -1.0f));
+        circle.setYVelocity((circle.getYVelocity() * -1.0f));
     }
     // Check bottom-most position
-    if ((center[1]) - object.getSize() <= -1.0f) // At edge of window
+    if ((center[1]) - circle.getSize() <= -1.0f) // At edge of window
     {
         // Change y direction
         if (DEBUG == TRUE)
@@ -330,20 +347,111 @@ void checkWindowBounds(GLFWobject &object, bool DEBUG)
             std::cout << "bottom bounce" << std::endl;
         }
             
-        object.setYVelocity((object.getYVelocity() * -1.0f));
+        circle.setYVelocity((circle.getYVelocity() * -1.0f));
     }
+    return;
 }
 
-
-/**********
- * float circleXDistance = abs(circle.getXPosition() - rectangle.getXPosition());
-    float circleYDistance = abs(circle.getYPosition() - rectangle.getYPosition());
-    float cornerDistance = (((circleXDistance - rectangle.getWidth() / 2) * (circleXDistance - rectangle.getWidth() / 2)) + ((circleYDistance - rectangle.getHeight() / 2) * (circleYDistance - rectangle.getHeight() / 2)));
-
-    if ((circleXDistance <= (rectangle.getWidth() / 2)) || (circleYDistance <= (rectangle.getHeight() / 2)))
+void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
+{
+    glm::vec2 center = rectangle.getPosition();
+    // Check right-most position
+    if ((center[0]) + (rectangle.getWidth() / 2) >= 1.0f) // At edge of window
     {
-        //TODO handle collision
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "left bounce" << std::endl;
+        }
+            
+        rectangle.setXVelocity((rectangle.getXVelocity() * -1.0f));
     }
-*/
+    // Check left-most position
+    if ((center[0]) - (rectangle.getWidth() / 2) <= -1.0f) // At edge of window
+    {
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "right bounce" << std::endl;
+        }
+            
+        rectangle.setXVelocity((rectangle.getXVelocity() * -1.0f));
+    }
+
+    // Check top-most position
+    if ((center[1]) + (rectangle.getHeight() / 2) >= 1.0f) // At edge of window
+    {
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "top bounce" << std::endl;
+        }
+            
+        rectangle.setYVelocity((rectangle.getYVelocity() * -1.0f));
+    }
+    // Check bottom-most position
+    if ((center[1]) - (rectangle.getHeight() / 2) <= -1.0f) // At edge of window
+    {
+        // Change y direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "bottom bounce" << std::endl;
+        }
+            
+        rectangle.setYVelocity((rectangle.getYVelocity() * -1.0f));
+    }
+    return;
+}
+
+void handlePointBoundary(GLFWobject &point, bool DEBUG)
+{
+    glm::vec2 center = point.getPosition();
+    // Check right-most position
+    if ((center[0]) >= 1.0f) // At edge of window
+    {
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "left bounce" << std::endl;
+        }
+            
+        point.setXVelocity((point.getXVelocity() * -1.0f));
+    }
+    // Check left-most position
+    if ((center[0]) <= -1.0f) // At edge of window
+    {
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "right bounce" << std::endl;
+        }
+            
+        point.setXVelocity((point.getXVelocity() * -1.0f));
+    }
+
+    // Check top-most position
+    if ((center[1]) >= 1.0f) // At edge of window
+    {
+        // Change x direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "top bounce" << std::endl;
+        }
+            
+        point.setYVelocity((point.getYVelocity() * -1.0f));
+    }
+    // Check bottom-most position
+    if ((center[1]) <= -1.0f) // At edge of window
+    {
+        // Change y direction
+        if (DEBUG == TRUE)
+        {
+            std::cout << "bottom bounce" << std::endl;
+        }
+            
+        point.setYVelocity((point.getYVelocity() * -1.0f));
+    }
+    return;
+}
 
 #endif // COLLISIONS_H

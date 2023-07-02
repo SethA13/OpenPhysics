@@ -226,7 +226,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
     GLFWobject point2       ('p',               //Shape 
                             POINTSIZE,            //Size
                             1000,               //NumSegments
-                            {-1.0f, 0.8f},       //Starting Position -- {x,y}
+                            {-0.95f, 0.8f},       //Starting Position -- {x,y}
                             {0.005f, -0.004f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
                             TRUE);             //Gravity

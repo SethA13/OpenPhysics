@@ -18,6 +18,7 @@ private:
     GLfloat size;
     GLfloat width;
     GLfloat height;
+    GLfloat weight;
     GLint numSegments;
     std::vector<GLfloat> vertices;
     glm::vec2 position;
@@ -35,8 +36,9 @@ public:
     const std::vector<GLfloat>& getVertices() const;
     // for circle radius and for width of rectangle
     GLfloat getSize() const;
-    GLfloat getWidth() const;
+    GLfloat getWeight() const;
     // for rectangle attributes
+    GLfloat getWidth() const;
     GLfloat getHeight() const;
 
     const glm::vec2& getPosition() const;
@@ -70,6 +72,7 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
     : shape(shape), size(size), numSegments(numSegments), position(position), velocity(velocity), rotation(rotation), shouldApplyGravity(shouldApplyGravity)
 {
     calculateVertices(shape, size, vertices, numSegments);
+    weight = getWeight();
 }
 
 // Destructor
@@ -152,6 +155,11 @@ const std::vector<GLfloat>& GLFWobject::getVertices() const
 GLfloat GLFWobject::getSize() const
 {
     return size;
+}
+
+GLfloat GLFWobject::getWeight() const
+{
+    return size * GRAVITY_AMOUNT;
 }
 
 GLfloat GLFWobject::getWidth() const
@@ -249,7 +257,7 @@ void GLFWobject::applyGravity()
     if (GLFWobject::getYPosition() > -1.0f)
     {
         //std::cout << "GRAVITY!!!" << std::endl;
-        velocity[1] -= GRAVITY_AMOUNT;
+        velocity[1] -= weight;
     }
 }
 
