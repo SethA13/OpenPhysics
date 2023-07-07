@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-std::string checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries);
+void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, bool &DEBUG);
 
 int main(int argc, char** argv)
 {	
@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 
 	// check if there is more than one argument and use the second one
 	// (the first argument is the executable)
-	initType = checkTerminalParams(argc, argv, initType, initEntries);
+	checkTerminalParams(argc, argv, initType, initEntries, DEBUG);
 
 	std::cout << "init Type declared: " << initType << std::endl;
 
@@ -47,9 +47,16 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-std::string checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries)
+void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, bool &DEBUG)
 {
-	if (argc > 1)
+	if (argc > 2)
+	{
+		bool arg2 = argv[2];
+		DEBUG = arg2;
+		std::string arg1(argv[1]);
+		initType = arg1;
+	}
+	else if (argc > 1)
 	{
 		std::string arg1(argv[1]);
 		initType = arg1;
@@ -67,7 +74,9 @@ std::string checkTerminalParams(int argc, char** argv, std::string &initType, st
 		{
 			std::cout << i << std::endl;
 		}
-		checkTerminalParams(1, argv, initType, initEntries);
+		std::cout << "After declaring init type, to add DEBUG messages, add a 1." << std::endl;
+		std::cout << "Example; 'main.exe glfw 1' " << std::endl;
+		checkTerminalParams(1, argv, initType, initEntries, DEBUG);
 	}
-	return initType;
+	return;
 }

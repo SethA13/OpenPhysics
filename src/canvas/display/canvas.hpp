@@ -201,7 +201,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
                             0.3f,               //Size
                             1000,               //NumSegments
                             {0.6f, 0.6f},       //Starting Position -- {x,y}
-                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
+                            {-0.01f, 0.0f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
                             TRUE);             //Gravity
     objects.push_back(rectangle1);
@@ -219,7 +219,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
                             POINTSIZE,            //Size
                             1000,               //NumSegments
                             {0.0f, 0.0f},       //Starting Position -- {x,y}
-                            {0.001f, 0.002f},       //Starting Velocity -- {x,y}
+                            {0.0001f, 0.002f},       //Starting Velocity -- {x,y}
                             0,                  //Rotation -- in degrees 
                             TRUE);             //Gravity
     objects.push_back(point1);
@@ -238,11 +238,6 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
         
 
     std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
-
-    // TODO: Set up vertex data and attribute pointers for each object
-    int circleCounter = 0;
-    int rectangleCounter = 0;
-    int pointCounter = 0;
     for (auto& object : objects)
     {
         allVertices.push_back(object.getVertices());

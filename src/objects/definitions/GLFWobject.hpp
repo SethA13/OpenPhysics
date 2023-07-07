@@ -9,7 +9,7 @@
 #include "../../../dependancies/glm/glm/glm.hpp"
 
 
-GLfloat GRAVITY_AMOUNT = 0.0003f;
+GLfloat GRAVITY_AMOUNT = 0.0005f;
 class GLFWobject
 {
 private:

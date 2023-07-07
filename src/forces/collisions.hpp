@@ -197,7 +197,6 @@ void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool 
 
 void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
 {
-    DEBUG = TRUE;
 
     float distance = glm::distance(circle.getPosition(), point.getPosition());
     if (distance <= circle.getSize())
