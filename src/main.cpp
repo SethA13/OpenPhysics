@@ -49,9 +49,9 @@ int main(int argc, char** argv)
 
 void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, bool &DEBUG)
 {
-	if (argc > 2)
+	if (argc > 3)
 	{
-		bool arg2 = argv[2];
+		bool arg2 = argv[3];
 		DEBUG = arg2;
 		std::string arg1(argv[1]);
 		initType = arg1;

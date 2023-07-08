@@ -27,6 +27,14 @@ void glutDrawCircle(const Point & center, int radius);
 
 void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG);
+std::vector<GLFWobject> createGLFWObjects(bool DEBUG);
+std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
+void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
+                    std::vector<GLuint> &VAOs, 
+                    GLuint VBO[], 
+                    std::vector<GLuint> &VBOs, 
+                    std::vector<std::vector<GLfloat>> &allVertices,
+                    bool DEBUG);
 void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
@@ -174,9 +182,29 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
         std::cout << "Shaders deleted!" << std::endl;
     }
         
+    std::vector<GLFWobject> objects = createGLFWObjects(DEBUG); // Update with all objects
+
+    std::vector<std::vector<GLfloat>> allVertices = setupObjectVertices(objects, DEBUG); // for holding all vertices data
+    
+    int NUMVERTOBJS = objects.size();
+    GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
+    std::vector<GLuint> VAOs; // Update with VAOs
+    std::vector<GLuint> VBOs; // update with VBOs
+    glGenVertexArrays(NUMVERTOBJS, VAO);
+    glGenBuffers(NUMVERTOBJS, VBO);
+
+    setupVAOandVBO(NUMVERTOBJS, VAO, VAOs, VBO, VBOs, allVertices, DEBUG);
+
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, DEBUG);
+
+    //cleanup on shutdown
+    GLFWCleanup(VAOs, VBOs, shaderProgram);
+    return;
+}
+
+std::vector<GLFWobject> createGLFWObjects(bool DEBUG)
+{
     std::vector<GLFWobject> objects; // Update with all objects
-
-
     // add in circles for testing purposes
     GLFWobject circle1      ('c',               //Shape 
                             0.1f,               //Size
@@ -235,9 +263,12 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
     {
         std::cout << "Objects made, added to vector" << std::endl;
     }
-        
+    return objects;
+}
 
-    std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
+std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG)
+{
+    std::vector<std::vector<GLfloat>> allVertices;
     for (auto& object : objects)
     {
         allVertices.push_back(object.getVertices());
@@ -247,15 +278,16 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
     {
         std::cout << "Vertices added!" << std::endl;
     }
-        
+    return allVertices;
+}
 
-    int NUMVERTOBJS = objects.size();
-    GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
-    std::vector<GLuint> VAOs; // Update with VAOs
-    std::vector<GLuint> VBOs; // update with VBOs
-    glGenVertexArrays(NUMVERTOBJS, VAO);
-    glGenBuffers(NUMVERTOBJS, VBO);
-    
+void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
+                    std::vector<GLuint> &VAOs, 
+                    GLuint VBO[], 
+                    std::vector<GLuint> &VBOs, 
+                    std::vector<std::vector<GLfloat>> &allVertices, 
+                    bool DEBUG)
+{   
     // Bind and setup VAO and VBO for each object
     if (DEBUG == TRUE)
     {
@@ -286,12 +318,6 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
         std::cout << "VAO/VBO bound, added to vector!" << std::endl;
         std::cout << "Calling main loop..." << std::endl;
     }
-
-    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, DEBUG);
-
-    //cleanup on shutdown
-    GLFWCleanup(VAOs, VBOs, shaderProgram);
-    return;
 }
 
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG)

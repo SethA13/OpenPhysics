@@ -6,10 +6,13 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <cmath>
+#include <map>
+
 #include "../../../dependancies/glm/glm/glm.hpp"
 
 
-GLfloat GRAVITY_AMOUNT = 0.0005f;
+GLfloat GRAVITY_AMOUNT = 0.001f;
+GLfloat PI = 3.14159;
 class GLFWobject
 {
 private:
@@ -24,6 +27,7 @@ private:
     glm::vec2 position;
     glm::vec2 velocity;
     GLfloat rotation;
+    GLfloat travelAngle;
 public:
     // Constructor declaration
     GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
@@ -40,6 +44,7 @@ public:
     // for rectangle attributes
     GLfloat getWidth() const;
     GLfloat getHeight() const;
+    GLfloat getTravelAngle();
 
     const glm::vec2& getPosition() const;
     const float getXPosition() const;
@@ -59,7 +64,8 @@ public:
     void setYVelocity(GLfloat newVelocity);
     void setRotation(GLfloat newRotation);
 
-
+    //Calculations
+    void calculateAngleOfTravel(GLfloat &angle);
     void updatePosition(GLfloat deltaTime);
     void applyGravity();
 
@@ -73,6 +79,7 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
 {
     calculateVertices(shape, size, vertices, numSegments);
     weight = getWeight();
+    travelAngle = getTravelAngle();
 }
 
 // Destructor
@@ -207,6 +214,19 @@ const GLfloat GLFWobject::getRotation() const
     return rotation;
 }
 
+GLfloat GLFWobject::getTravelAngle()
+{
+    GLfloat angle = 0;
+    calculateAngleOfTravel(angle);
+    if (angle < 0.0)
+    {
+        angle = abs(angle);
+        angle = 360 - angle;
+    }
+    std::cout << "Angle; " << angle << std::endl;
+    return angle;
+}
+
 // Setters
 void GLFWobject::setGravityEnable(bool flag)
 {
@@ -245,6 +265,14 @@ void GLFWobject::setYVelocity(GLfloat newVelocity)
 void GLFWobject::setRotation(const GLfloat newRotation)
 {
     rotation = newRotation;
+}
+
+void GLFWobject::calculateAngleOfTravel(GLfloat &angle)
+{
+    float hypotenuse = hypot(getXVelocity(), getYVelocity());
+    float sinAngle = getYVelocity() / hypotenuse;
+    angle = asin(sinAngle);
+    angle = angle * 180 / PI;
 }
 
 void GLFWobject::updatePosition(GLfloat deltaTime)
