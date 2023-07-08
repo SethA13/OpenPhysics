@@ -340,7 +340,6 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
     // Check bottom-most position
     if ((center[1]) - circle.getSize() < -1.0f) // At edge of window
     {
-        DEBUG = TRUE;
         // Change y direction
         if (DEBUG == TRUE)
         {
@@ -392,7 +391,6 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
     // Check bottom-most position
     if ((center[1]) - (rectangle.getHeight() / 2) < -1.0f) // At edge of window
     {
-        DEBUG = TRUE;
         // Change y direction
         if (DEBUG == TRUE)
         {
@@ -444,7 +442,6 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     // Check bottom-most position
     if ((center[1]) < -1.0f) // At edge of window
     {
-        DEBUG = TRUE;
         // Change y direction
         if (DEBUG == TRUE)
         {
