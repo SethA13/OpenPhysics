@@ -164,6 +164,8 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
     if (distance < circle1.getSize() + circle2.getSize())
     {
         // Circles have collided
+        circle1.addCollision();
+        circle2.addCollision();
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
@@ -186,6 +188,8 @@ void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool 
     if (distance < circle.getSize())
     {
         // Circle and rectangle have collided
+        circle.addCollision();
+        rectangle.addCollision();
         // Reverse the direction of the circle
         glm::vec2 newVelocity = -circle.getVelocity();
         circle.setVelocity(newVelocity);
@@ -201,6 +205,9 @@ void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
     float distance = glm::distance(circle.getPosition(), point.getPosition());
     if (distance < circle.getSize())
     {
+        // Circle and point have collided
+        circle.addCollision();
+        point.addCollision();
         if (DEBUG == TRUE)
         {
             std::cout << "Circle - Point Collision!" << std::endl;
@@ -234,6 +241,8 @@ void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle
     if (rect1Left <= rect2Right && rect1Right >= rect2Left && rect1Top >= rect2Bottom && rect1Bottom <= rect2Top)
     {
         // Rectangles have collided
+        rectangle1.addCollision();
+        rectangle2.addCollision();
         // Reverse the direction of both rectangles
         glm::vec2 newVelocity1 = -rectangle1.getVelocity();
         glm::vec2 newVelocity2 = -rectangle2.getVelocity();
@@ -257,6 +266,8 @@ void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DE
     if (pointPosition.x > rectLeft && pointPosition.x < rectRight && pointPosition.y > rectBottom && pointPosition.y < rectTop)
     {
         // Point is inside the rectangle
+        rectangle.addCollision();
+        point.addCollision();
         // Reverse the direction of both the rectangle and the point
         glm::vec2 newVelocity1 = -rectangle.getVelocity();
         glm::vec2 newVelocity2 = -point.getVelocity();
@@ -270,6 +281,9 @@ void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG)
 {
     if (point1.getPosition() == point2.getPosition())
     {
+        //Points have collided
+        point1.addCollision();
+        point2.addCollision();
         point1.setVelocity(- point1.getVelocity());
         point2.setVelocity(- point2.getVelocity());
     }

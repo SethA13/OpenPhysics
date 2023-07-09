@@ -1,43 +1,75 @@
+#ifndef OUTPUTPROTOCOL_H
+#define OUTPUTPROTOCOL_H
+
 #include <iostream>
 #include <fstream>
-#include <map>
+#include <unordered_map>
 
 #include "../objects/definitions/GLFWobject.hpp"
 
-std::map<std::string, std::string> createObjectMap(GLFWobject &object);
-void writeObjectToFile(std::map<std::string, std::string> &objectMap);
+std::unordered_map<int, std::unordered_multimap<std::string, std::string>> createObjectMaps(std::vector<GLFWobject>& objects);
+void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string filename);
 
-std::map<std::string, std::string> createObjectMap(GLFWobject &object)
+std::unordered_map<int, std::unordered_multimap<std::string, std::string>> createObjectMaps(std::vector<GLFWobject>& objects)
 {
-    std::map<std::string, std::string> objectMap;
-    objectMap["Shape"] = std::string(1, object.getShape());
-    if (object.getShape() == 'c')
+    int count = 1;
+    std::unordered_map<int, std::unordered_multimap<std::string, std::string>> objectMaps;
+    for (size_t i = 0; i < objects.size(); i++)
     {
-        objectMap["Size"] = std::to_string(object.getSize());
+        std::unordered_multimap<std::string, std::string> objectMap;
+        
+        std::string endingString = std::to_string(objects[i].getEndingXPosition()) + ", " + std::to_string(objects[i].getEndingYPosition());
+        objectMap.insert(std::pair<std::string, std::string>("Ending Position", endingString));
+        //TODO add in rotation of object once correct rotation calculation is done
+        for (auto& collision : objects[i].getCollisions())
+        {
+            std::string collisionString = std::to_string(collision[0]) + ", " + std::to_string(collision[1]);
+            objectMap.insert(std::pair<std::string, std::string>("Collision", collisionString));
+        }
+        objectMap.insert(std::pair<std::string, std::string>("TravelAngle", std::to_string(objects[i].getTravelAngle())));
+        objectMap.insert(std::pair<std::string, std::string>("Weight", std::to_string(objects[i].getWeight())));
+        if (objects[i].getShape() == 'c')
+        {
+            objectMap.insert(std::pair<std::string, std::string>("Size", std::to_string(objects[i].getSize())));
+            objectMap.insert(std::pair<std::string, std::string>("Shape", "Circle"));
+        }
+        else if (objects[i].getShape() == 'r')
+        {
+            objectMap.insert(std::pair<std::string, std::string>("Height", std::to_string(objects[i].getHeight())));
+            objectMap.insert(std::pair<std::string, std::string>("Width", std::to_string(objects[i].getWidth())));
+            objectMap.insert(std::pair<std::string, std::string>("Shape", "Rectangle"));
+        }
+        else
+        {
+            objectMap.insert(std::pair<std::string, std::string>("Shape", "Point"));
+        }
+        std::string startingString = std::to_string(objects[i].getStartingXPosition()) + ", " + std::to_string(objects[i].getStartingYPosition());
+        objectMap.insert(std::pair<std::string, std::string>("Starting Position", startingString));
+        objectMaps.insert(std::pair<int, std::unordered_multimap<std::string, std::string>>(count, objectMap));
+        count++;
     }
-    else if (object.getShape() == 'r')
-    {
-        objectMap["Width"] = std::to_string(object.getWidth());
-        objectMap["Height"] = std::to_string(object.getHeight());
-    }
-    objectMap["Weight"] = std::to_string(object.getWeight());
-    objectMap["travelAngle"] = std::to_string(object.getTravelAngle());
-    //TODO add in rotation of object once correct rotation calculation is done
 
-    return objectMap;
+    return objectMaps;
 }
 
-void writeObjectToFile(std::map<std::string, std::string> &objectMap, std::string filename)
+
+
+void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string filename)
 {
     std::ofstream outfile(filename);
     if (outfile.is_open())
     {
-        for (auto& pair :objectMap)
+        for (auto& map : objectMaps)
         {
-            outfile << pair.first << "; " << pair.second << std::endl;
+            std::unordered_multimap<std::string, std::string>& objectMap = map.second;
+            for (auto& pair : objectMap)
+            {
+                outfile << pair.first << "; " << pair.second << std::endl;
+            }
+            outfile << std::endl;
         }
         outfile.close();
-        std::cerr << "File "<< filename<< "Saved."<<std::endl;
+        std::cerr << "File "<< filename << " Saved."<<std::endl;
     }
     else
     {
@@ -46,3 +78,5 @@ void writeObjectToFile(std::map<std::string, std::string> &objectMap, std::strin
     
     return;
 }
+
+#endif //OUTPUTPROTOCOL_H

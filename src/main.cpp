@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, bool &DEBUG);
+void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, std::string &filename, bool &DEBUG);
 
 int main(int argc, char** argv)
 {	
@@ -13,22 +13,26 @@ int main(int argc, char** argv)
 	int windowHeight = 1000;
 	int windowWidth = 1000;
 	std::list<std::string> initEntries{"glfw", "glut"};
-	std::string initType ="";
+	std::string initType = "NULL";
+	std::string filename = "NULL";
 
 	// check if there is more than one argument and use the second one
 	// (the first argument is the executable)
-	checkTerminalParams(argc, argv, initType, initEntries, DEBUG);
-
-	std::cout << "init Type declared: " << initType << std::endl;
+	checkTerminalParams(argc, argv, initType, initEntries, filename, DEBUG);
 
 	if (initType == "glfw" || initType == "GLFW")
 	{
+		if (filename != "NULL")
+		{
+			
+		}
+		
 		std::cout << "Creating GLFW window..." << std::endl;
 		// This is stupid to do, but I can't get getline() to play nice with char arrays so here we are.
 		const int arrayLength = initType.length();
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
-		glfwWindowInit(windowHeight, windowWidth, windowName, DEBUG);
+		glfwWindowInit(windowHeight, windowWidth, windowName, filename, DEBUG);
 	}
 	else if (initType == "glut" || initType == "GLUT")
 	{
@@ -37,7 +41,7 @@ int main(int argc, char** argv)
 		const int arrayLength = initType.length();
 		char* windowName = new char[arrayLength+1];
 		std::strcpy(windowName, initType.c_str());
-		glutWindowInit(argc, argv, windowHeight, windowWidth, windowName, DEBUG);
+		glutWindowInit(argc, argv, windowHeight, windowWidth, windowName, filename, DEBUG);
 		//not needed on return
 		delete[] windowName;
 	}
@@ -47,15 +51,28 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, bool &DEBUG)
+void checkTerminalParams(int argc, char** argv, std::string &initType, std::list<std::string> initEntries, std::string &filename, bool &DEBUG)
 {
 	if (argc > 3)
 	{
-		bool arg2 = argv[3];
-		DEBUG = arg2;
+		bool arg3 = argv[3];
+		DEBUG = arg3;
+
+		std::string arg2(argv[2]);
+		filename = arg2;
+
 		std::string arg1(argv[1]);
 		initType = arg1;
 	}
+	else if (argc > 2)
+	{
+		std::string arg2(argv[2]);
+		filename = arg2;
+
+		std::string arg1(argv[1]);
+		initType = arg1;
+	}
+	
 	else if (argc > 1)
 	{
 		std::string arg1(argv[1]);
@@ -67,6 +84,12 @@ void checkTerminalParams(int argc, char** argv, std::string &initType, std::list
 		std::cin >> initType;
 	}
 
+	if (filename == "NULL")
+	{
+		std::cout << "Please enter a filename.ophy ";
+		std::cin >> filename;
+	}
+
 	if (initType == "T" || initType == "t")
 	{
 		std::cout	<< "Available init types; " << std::endl;
@@ -75,8 +98,8 @@ void checkTerminalParams(int argc, char** argv, std::string &initType, std::list
 			std::cout << i << std::endl;
 		}
 		std::cout << "After declaring init type, to add DEBUG messages, add a 1." << std::endl;
-		std::cout << "Example; 'main.exe glfw 1' " << std::endl;
-		checkTerminalParams(1, argv, initType, initEntries, DEBUG);
+		std::cout << "Example; 'main.exe glfw  filename.ophy 1' " << std::endl;
+		checkTerminalParams(1, argv, initType, initEntries, filename, DEBUG);
 	}
 	return;
 }

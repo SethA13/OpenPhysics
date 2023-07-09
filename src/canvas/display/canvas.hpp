@@ -6,11 +6,14 @@
 #include "../shaders/shaders.hpp"
 #include "../../objects/definitions/objectsMasterInclude.hpp"
 #include "../../forces/collisions.hpp"
+#include "../../fileHandlers/inputProtocol.hpp"
+#include "../../fileHandlers/outputProtocol.hpp"
 
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <vector>
+#include <unordered_map>
 
 #include "../../../dependancies/glm/glm/glm.hpp"
 #include "../../../dependancies/glm/glm/gtc/matrix_transform.hpp"
@@ -25,8 +28,8 @@ int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowNam
 void glutDrawCircle(const Point & center, int radius);
 
 
-void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG);
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string filename, bool DEBUG);
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string filename, bool DEBUG);
 std::vector<GLFWobject> createGLFWObjects(bool DEBUG);
 std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
 void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
@@ -47,7 +50,7 @@ void glutDisplay()
     return;
 }
 
-int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
+int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, std::string filename, bool DEBUG)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
@@ -79,7 +82,7 @@ void glutDrawCircle(const Point & center, int radius)
 }
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string filename, bool DEBUG)
 {
     if (DEBUG == TRUE)
         {
@@ -195,7 +198,9 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
 
     setupVAOandVBO(NUMVERTOBJS, VAO, VAOs, VBO, VBOs, allVertices, DEBUG);
 
-    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, DEBUG);
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, filename, DEBUG);
+
+
 
     //cleanup on shutdown
     GLFWCleanup(VAOs, VBOs, shaderProgram);
@@ -204,6 +209,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
 
 std::vector<GLFWobject> createGLFWObjects(bool DEBUG)
 {
+
     std::vector<GLFWobject> objects; // Update with all objects
     // add in circles for testing purposes
     GLFWobject circle1      ('c',               //Shape 
@@ -320,7 +326,7 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
     }
 }
 
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG)
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string filename, bool DEBUG)
 {
     if (DEBUG == TRUE)
     {
@@ -376,6 +382,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
                 {
                     objects[i].setYPosition((-1.0 + objects[i].getSize()));
                     objects[i].setGravityEnable(FALSE);
+                    objects[i].setEndingPosition(objects[i].getEndingPosition());
                 }
                 else
                     objects[i].setYPosition((-1.0 + objects[i].getSize()));
@@ -403,6 +410,9 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         glfwSwapBuffers(window);
     }
     glBindVertexArray(0);
+    std::unordered_map<int, std::unordered_multimap<std::string, std::string>> objectMaps = createObjectMaps(objects);
+    writeMapsToFile(objectMaps, filename);
+    
     return;
 }
 
