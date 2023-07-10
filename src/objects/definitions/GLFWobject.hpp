@@ -6,10 +6,12 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <cmath>
+
 #include "../../../dependancies/glm/glm/glm.hpp"
 
 
-GLfloat GRAVITY_AMOUNT = 0.0003f;
+GLfloat GRAVITY_AMOUNT = 0.001f;
+GLfloat PI = 3.14159;
 class GLFWobject
 {
 private:
@@ -18,11 +20,18 @@ private:
     GLfloat size;
     GLfloat width;
     GLfloat height;
+    GLfloat weight;
     GLint numSegments;
     std::vector<GLfloat> vertices;
     glm::vec2 position;
     glm::vec2 velocity;
     GLfloat rotation;
+    GLfloat travelAngle;
+    GLfloat startingTravelAngle;
+    GLfloat endingTravelAngle;
+    glm::vec2 startingPosition;
+    glm::vec2 endingPosition;
+    std::vector<glm::vec2> collisions;
 public:
     // Constructor declaration
     GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
@@ -35,13 +44,22 @@ public:
     const std::vector<GLfloat>& getVertices() const;
     // for circle radius and for width of rectangle
     GLfloat getSize() const;
-    GLfloat getWidth() const;
+    GLfloat getWeight() const;
     // for rectangle attributes
+    GLfloat getWidth() const;
     GLfloat getHeight() const;
+    GLfloat getTravelAngle();
+    GLfloat getStartingTravelAngle();
+    std::vector<glm::vec2> getCollisions();
 
     const glm::vec2& getPosition() const;
     const float getXPosition() const;
     const float getYPosition() const;
+    const float getStartingXPosition() const;
+    const float getStartingYPosition() const;
+    const float getEndingXPosition() const;
+    const float getEndingYPosition() const;
+    const glm::vec2& getEndingPosition() const;
     const glm::vec2& getVelocity() const;
     const GLfloat getXVelocity();
     const GLfloat getYVelocity();
@@ -56,8 +74,13 @@ public:
     void setXVelocity(GLfloat newVelocity);
     void setYVelocity(GLfloat newVelocity);
     void setRotation(GLfloat newRotation);
+    void setEndingPosition(const glm::vec2& position);
 
 
+    void addCollision();
+
+    //Calculations
+    void calculateAngleOfTravel(GLfloat &angle);
     void updatePosition(GLfloat deltaTime);
     void applyGravity();
 
@@ -70,6 +93,10 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
     : shape(shape), size(size), numSegments(numSegments), position(position), velocity(velocity), rotation(rotation), shouldApplyGravity(shouldApplyGravity)
 {
     calculateVertices(shape, size, vertices, numSegments);
+    weight = getWeight();
+    travelAngle = getTravelAngle();
+    startingPosition = position;
+    startingTravelAngle = getTravelAngle();
 }
 
 // Destructor
@@ -115,17 +142,20 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
 
         vertices.push_back(-halfWidth);  // Top-left
         vertices.push_back(halfHeight);
-
-
-        std::cout << "Num Vertices; " << vertices.size() << std::endl;
     }
 
     if (shape == 'p' || shape == 'P')
     {
         vertices.clear();
-        vertices.reserve(2);
+        vertices.reserve((numSegments + 1) * 2);
         vertices.push_back(0.0f); // Center point
         vertices.push_back(0.0f);
+        for (int i = 0; i <= numSegments; ++i)
+        {
+            GLfloat theta = 2.0f * 3.14159f * static_cast<GLfloat>(i) / numSegments;
+            vertices.push_back(size * std::cos(theta));
+            vertices.push_back(size * std::sin(theta));
+        }
     }
      
 }
@@ -149,6 +179,11 @@ const std::vector<GLfloat>& GLFWobject::getVertices() const
 GLfloat GLFWobject::getSize() const
 {
     return size;
+}
+
+GLfloat GLFWobject::getWeight() const
+{
+    return size * GRAVITY_AMOUNT;
 }
 
 GLfloat GLFWobject::getWidth() const
@@ -176,6 +211,31 @@ const float GLFWobject::getYPosition() const
     return position[1];
 }
 
+const float GLFWobject::getStartingXPosition() const
+{
+    return startingPosition[0];
+}
+
+const float GLFWobject::getStartingYPosition() const
+{
+    return startingPosition[1];
+}
+
+const float GLFWobject::getEndingXPosition() const
+{
+    return endingPosition[0];
+}
+
+const float GLFWobject::getEndingYPosition() const
+{
+    return endingPosition[1];
+}
+
+const glm::vec2& GLFWobject::getEndingPosition() const
+{
+    return endingPosition;
+}
+
 const glm::vec2& GLFWobject::getVelocity() const
 {
     return velocity;
@@ -194,6 +254,28 @@ const GLfloat GLFWobject::getYVelocity()
 const GLfloat GLFWobject::getRotation() const
 {
     return rotation;
+}
+
+GLfloat GLFWobject::getTravelAngle()
+{
+    GLfloat angle = 0;
+    calculateAngleOfTravel(angle);
+    if (angle < 0.0)
+    {
+        angle = abs(angle);
+        angle = 360 - angle;
+    }
+    return angle;
+}
+
+GLfloat GLFWobject::getStartingTravelAngle()
+{
+    return startingTravelAngle;
+}
+
+std::vector<glm::vec2> GLFWobject::getCollisions()
+{
+    return collisions;
 }
 
 // Setters
@@ -236,6 +318,25 @@ void GLFWobject::setRotation(const GLfloat newRotation)
     rotation = newRotation;
 }
 
+void GLFWobject::setEndingPosition(const glm::vec2& position)
+{
+    endingPosition = position;
+}
+
+
+void GLFWobject::addCollision()
+{
+    collisions.push_back(position);
+}
+
+void GLFWobject::calculateAngleOfTravel(GLfloat &angle)
+{
+    float hypotenuse = hypot(getXVelocity(), getYVelocity());
+    float sinAngle = getYVelocity() / hypotenuse;
+    angle = asin(sinAngle);
+    angle = angle * 180 / PI;
+}
+
 void GLFWobject::updatePosition(GLfloat deltaTime)
 {
     position += velocity * deltaTime;
@@ -246,7 +347,7 @@ void GLFWobject::applyGravity()
     if (GLFWobject::getYPosition() > -1.0f)
     {
         //std::cout << "GRAVITY!!!" << std::endl;
-        velocity[1] -= GRAVITY_AMOUNT;
+        velocity[1] -= weight;
     }
 }
 

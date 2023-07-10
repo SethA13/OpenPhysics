@@ -6,25 +6,41 @@
 #include "../shaders/shaders.hpp"
 #include "../../objects/definitions/objectsMasterInclude.hpp"
 #include "../../forces/collisions.hpp"
+#include "../../fileHandlers/inputProtocol.hpp"
+#include "../../fileHandlers/outputProtocol.hpp"
 
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <list>
 #include <vector>
+#include <unordered_map>
+#include <chrono>
 
 #include "../../../dependancies/glm/glm/glm.hpp"
 #include "../../../dependancies/glm/glm/gtc/matrix_transform.hpp"
 #include "../../../dependancies/glm/glm/gtc/type_ptr.hpp"
 #include "../../../dependancies/glm/glm/gtx/string_cast.hpp"
 
+float POINTSIZE = 0.005f;
+
 // Function Prototypes
 void glutDisplay();
-int glutWindowInit(int argc, char** argv, char *windowName);
+int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, bool DEBUG);
 void glutDrawCircle(const Point & center, int radius);
 
 
-void glfwCircleWindowInit(int HEIGHT, int WIDTH, char *windowName);
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG);
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG);
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string outFile, bool DEBUG);
+std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG);
+std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile);
+std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
+void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
+                    std::vector<GLuint> &VAOs, 
+                    GLuint VBO[], 
+                    std::vector<GLuint> &VBOs, 
+                    std::vector<std::vector<GLfloat>> &allVertices,
+                    bool DEBUG);
 void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
@@ -37,7 +53,7 @@ void glutDisplay()
     return;
 }
 
-int glutWindowInit(int argc, char** argv, char *windowName)
+int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
@@ -69,8 +85,9 @@ void glutDrawCircle(const Point & center, int radius)
 }
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
+void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG)
 {
+    std::string outFile = "NULL";
     if (DEBUG == TRUE)
         {
             std::cout << "Init called!" << std::endl;
@@ -172,59 +189,145 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
         std::cout << "Shaders deleted!" << std::endl;
     }
         
+    std::vector<GLFWobject> objects = createGLFWObjects(inFile, outFile, DEBUG); // Update with all objects
+
+    std::vector<std::vector<GLfloat>> allVertices = setupObjectVertices(objects, DEBUG); // for holding all vertices data
+    
+    int NUMVERTOBJS = objects.size();
+    GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
+    std::vector<GLuint> VAOs; // Update with VAOs
+    std::vector<GLuint> VBOs; // update with VBOs
+    glGenVertexArrays(NUMVERTOBJS, VAO);
+    glGenBuffers(NUMVERTOBJS, VBO);
+
+    setupVAOandVBO(NUMVERTOBJS, VAO, VAOs, VBO, VBOs, allVertices, DEBUG);
+
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, outFile, DEBUG);
+
+
+
+    //cleanup on shutdown
+    GLFWCleanup(VAOs, VBOs, shaderProgram);
+    return;
+}
+
+std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG)
+{
     std::vector<GLFWobject> objects; // Update with all objects
+    std::string scenario = "NULL";
+    std::list<std::string> scenarioEntries{"circles", "rectangles", "points", "circle"};
 
-
-    // Create the circle objects
-    GLFWobject circle1      ('c',               //Shape 
-                            0.2f,               //Size
-                            1000,               //NumSegments
-                            {0.0f, 0.0f},       //Starting Position -- {x,y}
-                            {0.003f, 0.003},    //Starting Velocity -- {x,y}
-                            0,                  //Rotation -- in degrees
-                            TRUE);              //Gravity
-    objects.push_back(circle1);
-
-    GLFWobject circle2      ('c',               //Shape 
-                            0.1f,               //Size
-                            1000,               //NumSegments
-                            {0.3f, -0.1f},      //Starting Position -- {x,y}
-                            {0.002f, -0.003f},  //Starting Velocity -- {x,y}
-                            0,                  //Rotation -- in degrees 
-                            TRUE);              //Gravity
-    objects.push_back(circle2);                
-
-    // add in rectangle for testing purposes
-    GLFWobject rectangle1   ('r',               //Shape 
-                            0.3f,               //Size
-                            30000,               //NumSegments
-                            {0.6f, 0.6f},       //Starting Position -- {x,y}
-                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
-                            0,                  //Rotation -- in degrees 
-                            FALSE);             //Gravity
-    objects.push_back(rectangle1);
-
-    //add in circle for testing purposes
-    GLFWobject point1       ('p',               //Shape 
-                            0.0f,               //Size
-                            1000,               //NumSegments
-                            {-0.6f, -0.6f},     //Starting Position -- {x,y}
-                            {0.0f, 0.0f},       //Starting Velocity -- {x,y}
-                            0,                  //Rotation -- in degrees 
-                            FALSE);             //Gravity
-    //objects.push_back(point1);
+    //If an infile is declared, attempt to read from it
+    if(inFile != "NULL")
+    {
+        createObjectsFromInfile(objects, inFile);
+    }
+    else
+    {
+        std::cout << "Which scenario would you like to play? " << std::endl;
+        std::cout << "Available scenarios; " << std::endl;
+        for (std::string i : scenarioEntries)
+        {
+            std::cout << i << std::endl;
+        }
+        std::cin >> scenario;  
+        objects = scenarioPicker(scenario, scenarioEntries, outFile);
+    }
     if (DEBUG == TRUE)
     {
         std::cout << "Objects made, added to vector" << std::endl;
     }
-        
+    return objects;
+}
 
-    std::vector<std::vector<GLfloat>> allVertices; // for holding all vertices data
+std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile)
+{
+    std::vector<GLFWobject> objects;
+    bool flag = true;
+    while (flag)
+    {
+        if (scenario == "circles")
+        {
+            flag = false;
+            outFile = "circleDemo.ophy";
+            GLFWobject circle1      ('c',               //Shape 
+                                    0.1f,               //Size
+                                    1000,               //NumSegments
+                                    {0.85f, 0.5f},       //Starting Position -- {x,y}
+                                    {0.003f, 0.003},    //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees
+                                    TRUE);              //Gravity
+            objects.push_back(circle1);
 
-    // TODO: Set up vertex data and attribute pointers for each object
-    int circleCounter = 0;
-    int rectangleCounter = 0;
-    int pointCounter = 0;
+            GLFWobject circle2      ('c',               //Shape 
+                                    0.1f,               //Size
+                                    1000,               //NumSegments
+                                    {0.3f, -0.1f},      //Starting Position -- {x,y}
+                                    {0.002f, -0.003f},  //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    TRUE);              //Gravity
+            objects.push_back(circle2);
+        }
+        else if (scenario == "rectangles")
+        {
+            flag = false;
+            outFile = "rectangleDemo.ophy";
+            GLFWobject rectangle1   ('r',               //Shape 
+                                    0.3f,               //Size
+                                    1000,               //NumSegments
+                                    {0.6f, 0.6f},       //Starting Position -- {x,y}
+                                    {-0.01f, 0.0f},       //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    TRUE);             //Gravity
+            objects.push_back(rectangle1);
+            GLFWobject rectangle2   ('r',               //Shape 
+                                    0.3f,               //Size
+                                    1000,               //NumSegments
+                                    {-0.3f, -0.2f},       //Starting Position -- {x,y}
+                                    {0.003f, 0.005f},       //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    TRUE);             //Gravity
+            objects.push_back(rectangle2);
+        }
+        else if (scenario == "points")
+        {
+            flag = false;
+            outFile = "pointDemo.ophy";
+            GLFWobject point1       ('p',               //Shape 
+                                    POINTSIZE,            //Size
+                                    1000,               //NumSegments
+                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
+                                    {0.0001f, 0.002f},       //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    TRUE);             //Gravity
+            objects.push_back(point1);
+            GLFWobject point2       ('p',               //Shape 
+                                    POINTSIZE,            //Size
+                                    1000,               //NumSegments
+                                    {-0.95f, 0.8f},       //Starting Position -- {x,y}
+                                    {0.005f, -0.004f},       //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    TRUE);             //Gravity
+            objects.push_back(point2);
+        }
+        else
+        {
+            std::cout << "No valid scenario given. Available scenarios; " << std::endl;
+            for (std::string i : scenarioEntries)
+            {
+                std::cout << i << std::endl;
+            }
+            std::cin >> scenario;
+        }
+    }
+    
+    
+    return objects;
+}
+
+std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG)
+{
+    std::vector<std::vector<GLfloat>> allVertices;
     for (auto& object : objects)
     {
         allVertices.push_back(object.getVertices());
@@ -234,15 +337,16 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
     {
         std::cout << "Vertices added!" << std::endl;
     }
-        
+    return allVertices;
+}
 
-    int NUMVERTOBJS = objects.size();
-    GLuint VAO[NUMVERTOBJS], VBO[NUMVERTOBJS];
-    std::vector<GLuint> VAOs; // Update with VAOs
-    std::vector<GLuint> VBOs; // update with VBOs
-    glGenVertexArrays(NUMVERTOBJS, VAO);
-    glGenBuffers(NUMVERTOBJS, VBO);
-    
+void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
+                    std::vector<GLuint> &VAOs, 
+                    GLuint VBO[], 
+                    std::vector<GLuint> &VBOs, 
+                    std::vector<std::vector<GLfloat>> &allVertices, 
+                    bool DEBUG)
+{   
     // Bind and setup VAO and VBO for each object
     if (DEBUG == TRUE)
     {
@@ -273,24 +377,18 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, bool DEBUG)
         std::cout << "VAO/VBO bound, added to vector!" << std::endl;
         std::cout << "Calling main loop..." << std::endl;
     }
-
-    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, DEBUG);
-
-    //cleanup on shutdown
-    GLFWCleanup(VAOs, VBOs, shaderProgram);
-    return;
 }
 
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, bool DEBUG)
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string outFile, bool DEBUG)
 {
     if (DEBUG == TRUE)
     {
         std::cout << "Main loop called!" << std::endl;
     }
-        
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
+        
         // Check and call events
         glfwPollEvents();
 
@@ -310,10 +408,20 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         // Perform collision detection and handling
         for (size_t i = 0; i < objects.size(); i++)
         {
+            if (DEBUG == TRUE)
+            {
+                std::cout << "Current object to check window bounds; " << objects[i].getShape() << std::endl;
+            }
+            
             checkWindowBounds(objects[i], DEBUG);
 
-            for (size_t j = i + 1; j < objects.size(); ++j)
+            for (size_t j = i + 1; j < objects.size(); j++)
             {
+                if (DEBUG == TRUE)
+                {
+                    std::cout << "Handling collisions for " << objects[i].getShape() << " and " << objects[j].getShape() << std::endl;
+                }
+                
                 handleCollision(objects[i], objects[j], DEBUG);
             }
             if (objects[i].getGravityEnable())
@@ -327,6 +435,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
                 {
                     objects[i].setYPosition((-1.0 + objects[i].getSize()));
                     objects[i].setGravityEnable(FALSE);
+                    objects[i].setEndingPosition(objects[i].getPosition());
                 }
                 else
                     objects[i].setYPosition((-1.0 + objects[i].getSize()));
@@ -354,6 +463,9 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         glfwSwapBuffers(window);
     }
     glBindVertexArray(0);
+    std::unordered_map<int, std::unordered_multimap<std::string, std::string>> objectMaps = createObjectMaps(objects);
+    writeMapsToFile(objectMaps, outFile);
+    
     return;
 }
 

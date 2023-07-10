@@ -23,12 +23,15 @@ PROJBINDIR = .\bin
 
 OBJCPPDIR = $(PROJSRCSDIR)\objects\functions
 OBJHPPDIR = $(PROJSRCSDIR)\objects\definitions
+FILEDIR = $(PROJSRCSDIR)\fileHandlers
 
 CIRCLEOBJ = circle
 POINTOBJ = point
 RECTOBJ = rectangle
 OBJOBJ = object
 VELOCITYOBJ = velocity
+FILEWRITER = outputProtocol
+FILEREADER = inputProtocol
 
 BASEOBJS = $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDIR)\$(RECTOBJ).cpp $(OBJCPPDIR)\$(OBJOBJ).cpp $(OBJCPPDIR)\$(VELOCITYOBJ).cpp
 
@@ -91,7 +94,7 @@ CLEAN_GRAVITY = clean_gravity
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJHPPDIR)\$(GLFWOBJECT).hpp
+PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJHPPDIR)\$(GLFWOBJECT).hpp $(FILEDIR)\$(FILEWRITER).hpp $(FILEDIR)\$(FILEREADER).hpp
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
