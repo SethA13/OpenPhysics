@@ -220,7 +220,7 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
     {
-        //TODO create objects from infile
+        createObjectsFromInfile(objects, inFile);
     }
     else
     {
