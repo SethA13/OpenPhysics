@@ -27,6 +27,8 @@ private:
     glm::vec2 velocity;
     GLfloat rotation;
     GLfloat travelAngle;
+    GLfloat startingTravelAngle;
+    GLfloat endingTravelAngle;
     glm::vec2 startingPosition;
     glm::vec2 endingPosition;
     std::vector<glm::vec2> collisions;
@@ -47,6 +49,7 @@ public:
     GLfloat getWidth() const;
     GLfloat getHeight() const;
     GLfloat getTravelAngle();
+    GLfloat getStartingTravelAngle();
     std::vector<glm::vec2> getCollisions();
 
     const glm::vec2& getPosition() const;
@@ -93,6 +96,7 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
     weight = getWeight();
     travelAngle = getTravelAngle();
     startingPosition = position;
+    startingTravelAngle = getTravelAngle();
 }
 
 // Destructor
@@ -262,6 +266,11 @@ GLfloat GLFWobject::getTravelAngle()
         angle = 360 - angle;
     }
     return angle;
+}
+
+GLfloat GLFWobject::getStartingTravelAngle()
+{
+    return startingTravelAngle;
 }
 
 std::vector<glm::vec2> GLFWobject::getCollisions()

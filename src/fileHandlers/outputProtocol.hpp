@@ -8,7 +8,7 @@
 #include "../objects/definitions/GLFWobject.hpp"
 
 std::unordered_map<int, std::unordered_multimap<std::string, std::string>> createObjectMaps(std::vector<GLFWobject>& objects);
-void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string filename);
+void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string outFile);
 
 std::unordered_map<int, std::unordered_multimap<std::string, std::string>> createObjectMaps(std::vector<GLFWobject>& objects)
 {
@@ -26,7 +26,8 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
             std::string collisionString = std::to_string(collision[0]) + ", " + std::to_string(collision[1]);
             objectMap.insert(std::pair<std::string, std::string>("Collision", collisionString));
         }
-        objectMap.insert(std::pair<std::string, std::string>("TravelAngle", std::to_string(objects[i].getTravelAngle())));
+        objectMap.insert(std::pair<std::string, std::string>("Ending Angle of Travel", std::to_string(objects[i].getTravelAngle())));
+        objectMap.insert(std::pair<std::string, std::string>("Starting Angle of Travel", std::to_string(objects[i].getStartingTravelAngle())));
         objectMap.insert(std::pair<std::string, std::string>("Weight", std::to_string(objects[i].getWeight())));
         if (objects[i].getShape() == 'c')
         {
@@ -54,9 +55,9 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
 
 
 
-void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string filename)
+void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string outFile)
 {
-    std::ofstream outfile(filename);
+    std::ofstream outfile(outFile);
     if (outfile.is_open())
     {
         for (auto& map : objectMaps)
@@ -69,11 +70,11 @@ void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string
             outfile << std::endl;
         }
         outfile.close();
-        std::cerr << "File "<< filename << " Saved."<<std::endl;
+        std::cerr << "File "<< outFile << " Saved."<<std::endl;
     }
     else
     {
-        std::cerr << "Failed to open file: " << filename << std::endl;
+        std::cerr << "Failed to open file: " << outFile << std::endl;
     }
     
     return;

@@ -38,6 +38,8 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG);
 void handleRectangleBoundary(GLFWobject &point, bool DEBUG);
 void handlePointBoundary(GLFWobject &point, bool DEBUG);
 
+void moveHalfDistance(float halfdistance, GLFWobject &object);
+
 
 
 // check if two objects are colliding
@@ -158,14 +160,17 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
     // Calculate distance between the centers of the circles
     glm::vec2 center1 = circle1.getPosition();
     glm::vec2 center2 = circle2.getPosition();
-    float distance = glm::distance(center1, center2);
+    float distance = glm::distance((center1), (center2));
 
     // Check for collision
-    if (distance < circle1.getSize() + circle2.getSize())
+    if (distance <= circle1.getSize() + circle2.getSize())
     {
         // Circles have collided
         circle1.addCollision();
         circle2.addCollision();
+        // Move each circle half the distance away from eachother
+        moveHalfDistance((distance - circle1.getSize()) / 2.0f, circle1);
+        moveHalfDistance((distance - circle2.getSize()) / 2.0f, circle2);
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
@@ -185,12 +190,13 @@ void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool 
 
     // Check if the closest point is within the circle
     float distance = glm::distance(circle.getPosition(), closestPoint);
-    if (distance < circle.getSize())
+    if (distance <= circle.getSize())
     {
         // Circle and rectangle have collided
         circle.addCollision();
         rectangle.addCollision();
         // Reverse the direction of the circle
+        float halfdistance = distance / 2.0f;
         glm::vec2 newVelocity = -circle.getVelocity();
         circle.setVelocity(newVelocity);
         newVelocity = -rectangle.getVelocity();
@@ -203,7 +209,7 @@ void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
 {
 
     float distance = glm::distance(circle.getPosition(), point.getPosition());
-    if (distance < circle.getSize())
+    if (distance <= circle.getSize())
     {
         // Circle and point have collided
         circle.addCollision();
@@ -464,6 +470,12 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
             
         point.setYVelocity((point.getYVelocity() * -0.9f));
     }
+    return;
+}
+
+void moveHalfDistance(float halfdistance, GLFWobject &object)
+{
+    object.setPosition(object.getPosition() + halfdistance);
     return;
 }
 
