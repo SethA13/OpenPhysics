@@ -26,12 +26,12 @@ float POINTSIZE = 0.005f;
 
 // Function Prototypes
 void glutDisplay();
-int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, bool DEBUG);
+int glutWindowInit(int argc, char** argv, int WIDTH, int HEIGHT, char *windowName, bool DEBUG);
 void glutDrawCircle(const Point & center, int radius);
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG);
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string outFile, bool DEBUG);
+void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG);
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowWidth, int windowHeight, std::string outFile, bool DEBUG);
 std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG);
 std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile);
 std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
@@ -53,7 +53,7 @@ void glutDisplay()
     return;
 }
 
-int glutWindowInit(int argc, char** argv, int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG)
+int glutWindowInit(int argc, char** argv, int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
@@ -85,7 +85,7 @@ void glutDrawCircle(const Point & center, int radius)
 }
 
 
-void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile, bool DEBUG)
+void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG)
 {
     std::string outFile = "NULL";
     if (DEBUG == TRUE)
@@ -106,8 +106,20 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile,
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
+    // Get the primary monitor
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+
+    // Get the work area of the monitor
+    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+    int monitorWidth = mode->width;
+    int monitorHeight = mode->height;
+
+    // Calculate the window position for centering
+    int windowPosX = (monitorWidth - WIDTH) / 2;
+    int windowPosY = ((monitorHeight - HEIGHT) / 2 - 10);
+
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(HEIGHT, WIDTH, windowName, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, windowName, nullptr, nullptr);
     if (!window)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -120,6 +132,9 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile,
 
     // Set the key callback function
     glfwSetKeyCallback(window, keyCallback);
+
+    // Set the window position
+    glfwSetWindowPos(window, windowPosX, windowPosY);
 
     // Initialize GLEW
     glewExperimental = GL_TRUE;
@@ -202,7 +217,7 @@ void glfwWindowInit(int HEIGHT, int WIDTH, char *windowName, std::string inFile,
 
     setupVAOandVBO(NUMVERTOBJS, VAO, VAOs, VBO, VBOs, allVertices, DEBUG);
 
-    glfwCollisionLoop(window, shaderProgram, VAOs, objects, HEIGHT, WIDTH, outFile, DEBUG);
+    glfwCollisionLoop(window, shaderProgram, VAOs, objects, WIDTH, HEIGHT, outFile, DEBUG);
 
 
 
@@ -215,21 +230,21 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
 {
     std::vector<GLFWobject> objects; // Update with all objects
     std::string scenario = "NULL";
-    std::list<std::string> scenarioEntries{"circles", "rectangles", "points", "circle"};
+    std::list<std::string> scenarioEntries{"1. circles", "2. rectangles", "3. points"};
 
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
     {
-        createObjectsFromInfile(objects, inFile);
+        createObjectsFromMap(objects, inFile);
     }
     else
     {
-        std::cout << "Which scenario would you like to play? " << std::endl;
         std::cout << "Available scenarios; " << std::endl;
         for (std::string i : scenarioEntries)
         {
             std::cout << i << std::endl;
         }
+        std::cout << "Which scenario would you like to play? ";
         std::cin >> scenario;  
         objects = scenarioPicker(scenario, scenarioEntries, outFile);
     }
@@ -246,7 +261,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
     bool flag = true;
     while (flag)
     {
-        if (scenario == "circles")
+        if (scenario == "circles" || scenario == "1")
         {
             flag = false;
             outFile = "circleDemo.ophy";
@@ -268,7 +283,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
                                     TRUE);              //Gravity
             objects.push_back(circle2);
         }
-        else if (scenario == "rectangles")
+        else if (scenario == "rectangles" || scenario == "2")
         {
             flag = false;
             outFile = "rectangleDemo.ophy";
@@ -289,7 +304,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
                                     TRUE);             //Gravity
             objects.push_back(rectangle2);
         }
-        else if (scenario == "points")
+        else if (scenario == "points" || scenario == "3")
         {
             flag = false;
             outFile = "pointDemo.ophy";
@@ -379,7 +394,7 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
     }
 }
 
-void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowHeight, int windowWidth, std::string outFile, bool DEBUG)
+void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowWidth, int windowHeight, std::string outFile, bool DEBUG)
 {
     if (DEBUG == TRUE)
     {

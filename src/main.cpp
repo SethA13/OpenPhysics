@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <list>
+#include <filesystem>
 
 #include <iostream>
 
@@ -21,18 +22,13 @@ int main(int argc, char** argv)
 	checkTerminalParams(argc, argv, initType, initEntries, inFile, DEBUG);
 
 	if (initType == "glfw" || initType == "GLFW")
-	{
-		if (inFile != "NULL")
-		{
-			
-		}
-		
+	{	
 		std::cout << "Creating GLFW window..." << std::endl;
 		// This is stupid to do, but I can't get getline() to play nice with char arrays so here we are.
 		const int arrayLength = initType.length();
-		char* windowName = new char[arrayLength+1];
+		char* windowName = new char[arrayLength + 1];
 		std::strcpy(windowName, initType.c_str());
-		glfwWindowInit(windowHeight, windowWidth, windowName, inFile, DEBUG);
+		glfwWindowInit(windowWidth, windowHeight, windowName, inFile, DEBUG);
 	}
 	else if (initType == "glut" || initType == "GLUT")
 	{
@@ -95,5 +91,11 @@ void checkTerminalParams(int argc, char** argv, std::string &initType, std::list
 		std::cout << "Example; 'main.exe glfw  inFile.ophy 1' " << std::endl;
 		checkTerminalParams(1, argv, initType, initEntries, inFile, DEBUG);
 	}
+	if (!std::filesystem::exists(inFile) && inFile != "NULL")
+	{
+		std::cout << "Declared file doesn't exist. Exiting..." << std::endl;
+		std::exit(-1);
+	}
+	
 	return;
 }

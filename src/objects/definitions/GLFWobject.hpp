@@ -25,6 +25,7 @@ private:
     std::vector<GLfloat> vertices;
     glm::vec2 position;
     glm::vec2 velocity;
+    glm::vec2 startingVelocity;
     GLfloat rotation;
     GLfloat travelAngle;
     GLfloat startingTravelAngle;
@@ -35,6 +36,8 @@ private:
 public:
     // Constructor declaration
     GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
+    // Constructor for infile
+    GLFWobject(const char shape, GLfloat size, glm::vec2 startingPosition, glm::vec2 startingVelocity);
 
     void calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> &vertices, GLint numSegments);
 
@@ -61,6 +64,8 @@ public:
     const float getEndingYPosition() const;
     const glm::vec2& getEndingPosition() const;
     const glm::vec2& getVelocity() const;
+    const float getStartingXVelocity() const;
+    const float getStartingYVelocity() const;
     const GLfloat getXVelocity();
     const GLfloat getYVelocity();
     const GLfloat getRotation() const;
@@ -81,6 +86,7 @@ public:
 
     //Calculations
     void calculateAngleOfTravel(GLfloat &angle);
+    glm::vec2 calculateVelocityFromAngle(GLfloat &angle);
     void updatePosition(GLfloat deltaTime);
     void applyGravity();
 
@@ -97,6 +103,21 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
     travelAngle = getTravelAngle();
     startingPosition = position;
     startingTravelAngle = getTravelAngle();
+    startingVelocity = velocity;
+}
+
+// Constructor for inFile
+GLFWobject::GLFWobject(const char shape, GLfloat size, glm::vec2 startingPosition, glm::vec2 startingVelocity)
+    : shape(shape), size(size), startingPosition(startingPosition), startingVelocity(startingVelocity)
+{
+    numSegments = 1000; //default 1000
+    calculateVertices(shape, size, vertices, numSegments);
+    velocity = startingVelocity;
+    weight = getWeight();
+    startingTravelAngle = getTravelAngle();
+    travelAngle = getTravelAngle();
+    position = startingPosition;
+    shouldApplyGravity = true; // default to moving objects
 }
 
 // Destructor
@@ -239,6 +260,16 @@ const glm::vec2& GLFWobject::getEndingPosition() const
 const glm::vec2& GLFWobject::getVelocity() const
 {
     return velocity;
+}
+
+const float GLFWobject::getStartingXVelocity() const
+{
+    return startingVelocity[0];
+}
+
+const float GLFWobject::getStartingYVelocity() const
+{
+    return startingVelocity[1];
 }
 
 const GLfloat GLFWobject::getXVelocity()

@@ -44,6 +44,8 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
         {
             objectMap.insert(std::pair<std::string, std::string>("Shape", "Point"));
         }
+        std::string startingVelocity = std::to_string(objects[i].getStartingXVelocity()) + ", " + std::to_string(objects[i].getStartingYVelocity());
+        objectMap.insert(std::pair<std::string, std::string>("Starting Velocity", startingVelocity));
         std::string startingString = std::to_string(objects[i].getStartingXPosition()) + ", " + std::to_string(objects[i].getStartingYPosition());
         objectMap.insert(std::pair<std::string, std::string>("Starting Position", startingString));
         objectMaps.insert(std::pair<int, std::unordered_multimap<std::string, std::string>>(count, objectMap));
@@ -57,26 +59,29 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
 
 void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string outFile)
 {
-    std::ofstream outfile(outFile);
-    if (outfile.is_open())
+    if (outFile != "NULL")
     {
-        for (auto& map : objectMaps)
+        std::ofstream outfile(outFile);
+        if (outfile.is_open())
         {
-            std::unordered_multimap<std::string, std::string>& objectMap = map.second;
-            for (auto& pair : objectMap)
+            for (auto& map : objectMaps)
             {
-                outfile << pair.first << "; " << pair.second << std::endl;
+                std::unordered_multimap<std::string, std::string>& objectMap = map.second;
+                for (auto& pair : objectMap)
+                {
+                    outfile << pair.first << "; " << pair.second << std::endl;
+                }
+                outfile << std::endl;
             }
-            outfile << std::endl;
+            outfile.close();
+            std::cerr << "File "<< outFile << " Saved."<<std::endl;
         }
-        outfile.close();
-        std::cerr << "File "<< outFile << " Saved."<<std::endl;
+        else
+        {
+            std::cerr << "Failed to open file: " << outFile << std::endl;
+        }
     }
-    else
-    {
-        std::cerr << "Failed to open file: " << outFile << std::endl;
-    }
-    
+
     return;
 }
 

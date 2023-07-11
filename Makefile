@@ -5,11 +5,11 @@ PROJECTDIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(OS),Windows_NT)
 	CC = g++
-	CFLAGS = -std=c++11 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm
+	CFLAGS = -std=c++17 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm -Wl,-rpath=$(PROJECTDIR)dependancies/glm -lglm_shared
 else
 	CC = g++
-	CFLAGS = -std=c++11 -Wall -Wextra
+	CFLAGS = -std=c++17 -Wall -Wextra
 	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -lglm
 endif
 
