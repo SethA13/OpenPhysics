@@ -36,15 +36,13 @@ private:
 public:
     // Constructor declaration
     GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
-    // Constructor for infile
-    GLFWobject(const char shape, GLfloat size, glm::vec2 startingPosition, glm::vec2 startingVelocity);
 
     void calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> &vertices, GLint numSegments);
 
     // Getters
     bool getGravityEnable();
     char getShape();
-    const std::vector<GLfloat>& getVertices() const;
+    std::vector<GLfloat>& getVertices();
     // for circle radius and for width of rectangle
     GLfloat getSize() const;
     GLfloat getWeight() const;
@@ -81,6 +79,16 @@ public:
     void setRotation(GLfloat newRotation);
     void setEndingPosition(const glm::vec2& position);
 
+    void setWeight(GLfloat newWeight);
+    void setTravelAngle(GLfloat newAngle);
+    void setStartingPosition(glm::vec2 newPosition);
+    void setStartingTravelAngle(GLfloat newAngle);
+    void setStartingVelocity(glm::vec2 newVelocity);
+    void setShape(char newShape);
+    void setSize(GLfloat newSize);
+    void setWidth(GLfloat newWidth);
+    void setHeight(GLfloat newHeight);
+
 
     void addCollision();
 
@@ -89,6 +97,8 @@ public:
     glm::vec2 calculateVelocityFromAngle(GLfloat &angle);
     void updatePosition(GLfloat deltaTime);
     void applyGravity();
+
+    void clear();
 
     // Destructor declaration
     ~GLFWobject();
@@ -104,20 +114,6 @@ GLFWobject::GLFWobject(const char shape, GLfloat size, GLint numSegments, glm::v
     startingPosition = position;
     startingTravelAngle = getTravelAngle();
     startingVelocity = velocity;
-}
-
-// Constructor for inFile
-GLFWobject::GLFWobject(const char shape, GLfloat size, glm::vec2 startingPosition, glm::vec2 startingVelocity)
-    : shape(shape), size(size), startingPosition(startingPosition), startingVelocity(startingVelocity)
-{
-    numSegments = 1000; //default 1000
-    calculateVertices(shape, size, vertices, numSegments);
-    velocity = startingVelocity;
-    weight = getWeight();
-    startingTravelAngle = getTravelAngle();
-    travelAngle = getTravelAngle();
-    position = startingPosition;
-    shouldApplyGravity = true; // default to moving objects
 }
 
 // Destructor
@@ -192,7 +188,7 @@ char GLFWobject::getShape()
     return shape;
 }
 
-const std::vector<GLfloat>& GLFWobject::getVertices() const
+std::vector<GLfloat>& GLFWobject::getVertices()
 {
     return vertices;
 }
@@ -380,6 +376,73 @@ void GLFWobject::applyGravity()
         //std::cout << "GRAVITY!!!" << std::endl;
         velocity[1] -= weight;
     }
+}
+
+
+void GLFWobject::setWeight(GLfloat newWeight)
+{
+    weight = newWeight;
+}
+
+void GLFWobject::setTravelAngle(GLfloat newAngle)
+{
+    travelAngle = newAngle;
+}
+
+void GLFWobject::setStartingPosition(glm::vec2 newPosition)
+{
+    startingPosition = newPosition;
+}
+
+void GLFWobject::setStartingTravelAngle(GLfloat newAngle)
+{
+    startingTravelAngle = newAngle;
+}
+
+void GLFWobject::setStartingVelocity(glm::vec2 newVelocity)
+{
+    startingVelocity = newVelocity;
+}
+
+void GLFWobject::setShape(char newShape)
+{
+    shape = newShape;
+}
+
+void GLFWobject::setSize(GLfloat newSize)
+{
+    size = newSize;
+}
+
+void GLFWobject::setWidth(GLfloat newWidth)
+{
+    width = newWidth;
+}
+
+void GLFWobject::setHeight(GLfloat newHeight)
+{
+    height = newHeight;
+}
+
+void GLFWobject::clear()
+{
+    shouldApplyGravity = true;
+    shape = '?';
+    size = 0.0f;
+    GLfloat width = 0.0f;
+    GLfloat height = 0.0f;
+    GLfloat weight = 0.0f;
+    std::vector<GLfloat> vertices = {};
+    glm::vec2 position = {};
+    glm::vec2 velocity = {};
+    glm::vec2 startingVelocity = {};
+    GLfloat rotation = 0.0f;
+    GLfloat travelAngle = 0.0f;
+    GLfloat startingTravelAngle = 0.0f;
+    GLfloat endingTravelAngle = 0.0f;
+    glm::vec2 startingPosition = {};
+    glm::vec2 endingPosition = {};
+    std::vector<glm::vec2> collisions = {};
 }
 
 #endif // GLFWOBJECT_H

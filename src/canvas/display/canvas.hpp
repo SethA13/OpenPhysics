@@ -235,7 +235,7 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
     {
-        createObjectsFromMap(objects, inFile);
+        objects = createObjectsFromMap(inFile);
     }
     else
     {
