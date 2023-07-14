@@ -8,6 +8,7 @@
 #include "../../forces/collisions.hpp"
 #include "../../fileHandlers/inputProtocol.hpp"
 #include "../../fileHandlers/outputProtocol.hpp"
+#include "../uiHandlers/scenarioPicker.hpp"
 
 #include <iostream>
 #include <string>
@@ -22,8 +23,6 @@
 #include "../../../dependancies/glm/glm/gtc/type_ptr.hpp"
 #include "../../../dependancies/glm/glm/gtx/string_cast.hpp"
 
-float POINTSIZE = 0.005f;
-
 // Function Prototypes
 void glutDisplay();
 int glutWindowInit(int argc, char** argv, int WIDTH, int HEIGHT, char *windowName, bool DEBUG);
@@ -33,7 +32,6 @@ void glutDrawCircle(const Point & center, int radius);
 void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG);
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowWidth, int windowHeight, std::string outFile, bool DEBUG);
 std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG);
-std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile);
 std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
 void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
                     std::vector<GLuint> &VAOs, 
@@ -230,7 +228,16 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
 {
     std::vector<GLFWobject> objects; // Update with all objects
     std::string scenario = "NULL";
-    std::list<std::string> scenarioEntries{"1. circles", "2. rectangles", "3. points"};
+    std::list<std::string> scenarioEntries{ "1. circles", 
+                                            "2. rectangles", 
+                                            "3. points", 
+                                            "4. circle to rectangle", 
+                                            "5. circle to point", 
+                                            "6. rectangle to point", 
+                                            "7. all shapes",
+                                            "8. SRS scenario 1",
+                                            "9. SRS scenario 2",
+                                            "10. SRS scenario 3"};
 
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
@@ -252,91 +259,6 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
     {
         std::cout << "Objects made, added to vector" << std::endl;
     }
-    return objects;
-}
-
-std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile)
-{
-    std::vector<GLFWobject> objects;
-    bool flag = true;
-    while (flag)
-    {
-        if (scenario == "circles" || scenario == "1")
-        {
-            flag = false;
-            outFile = "circleDemo.ophy";
-            GLFWobject circle1      ('c',               //Shape 
-                                    0.1f,               //Size
-                                    1000,               //NumSegments
-                                    {0.85f, 0.5f},       //Starting Position -- {x,y}
-                                    {0.003f, 0.003},    //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees
-                                    TRUE);              //Gravity
-            objects.push_back(circle1);
-
-            GLFWobject circle2      ('c',               //Shape 
-                                    0.1f,               //Size
-                                    1000,               //NumSegments
-                                    {0.3f, -0.1f},      //Starting Position -- {x,y}
-                                    {0.002f, -0.003f},  //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees 
-                                    TRUE);              //Gravity
-            objects.push_back(circle2);
-        }
-        else if (scenario == "rectangles" || scenario == "2")
-        {
-            flag = false;
-            outFile = "rectangleDemo.ophy";
-            GLFWobject rectangle1   ('r',               //Shape 
-                                    0.3f,               //Size
-                                    1000,               //NumSegments
-                                    {0.6f, 0.6f},       //Starting Position -- {x,y}
-                                    {-0.01f, 0.0f},       //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees 
-                                    TRUE);             //Gravity
-            objects.push_back(rectangle1);
-            GLFWobject rectangle2   ('r',               //Shape 
-                                    0.3f,               //Size
-                                    1000,               //NumSegments
-                                    {-0.3f, -0.2f},       //Starting Position -- {x,y}
-                                    {0.003f, 0.005f},       //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees 
-                                    TRUE);             //Gravity
-            objects.push_back(rectangle2);
-        }
-        else if (scenario == "points" || scenario == "3")
-        {
-            flag = false;
-            outFile = "pointDemo.ophy";
-            GLFWobject point1       ('p',               //Shape 
-                                    POINTSIZE,            //Size
-                                    1000,               //NumSegments
-                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
-                                    {0.0001f, 0.002f},       //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees 
-                                    TRUE);             //Gravity
-            objects.push_back(point1);
-            GLFWobject point2       ('p',               //Shape 
-                                    POINTSIZE,            //Size
-                                    1000,               //NumSegments
-                                    {-0.95f, 0.8f},       //Starting Position -- {x,y}
-                                    {0.005f, -0.004f},       //Starting Velocity -- {x,y}
-                                    0,                  //Rotation -- in degrees 
-                                    TRUE);             //Gravity
-            objects.push_back(point2);
-        }
-        else
-        {
-            std::cout << "No valid scenario given. Available scenarios; " << std::endl;
-            for (std::string i : scenarioEntries)
-            {
-                std::cout << i << std::endl;
-            }
-            std::cin >> scenario;
-        }
-    }
-    
-    
     return objects;
 }
 
@@ -446,10 +368,11 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
 
             if (objects[i].getYPosition() + objects[i].getSize() <= -1.0f)
             {
-                if (objects[i].getYVelocity() <= 0.03f && objects[i].getYVelocity() >= -0.03f)
+                if (objects[i].getYVelocity() <= 0.3f)
                 {
                     objects[i].setYPosition((-1.0 + objects[i].getSize()));
                     objects[i].setGravityEnable(FALSE);
+                    objects[i].setYVelocity(0.0);
                     objects[i].setEndingPosition(objects[i].getPosition());
                 }
                 else

@@ -11,9 +11,12 @@ void checkTerminalParams(int argc, char** argv, std::string &initType, std::list
 int main(int argc, char** argv)
 {	
 	bool DEBUG = FALSE;
-	int windowHeight = 1000;
 	int windowWidth = 1000;
-	std::list<std::string> initEntries{"glfw", "glut"};
+	int windowHeight = 1000;
+	
+	std::list<std::string> initEntries{	"1. glfw",
+	 									"2. glut",
+										"3. LAS/LAZ"};
 	std::string initType = "NULL";
 	std::string inFile = "NULL";
 

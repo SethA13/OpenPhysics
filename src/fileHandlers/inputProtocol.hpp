@@ -45,19 +45,36 @@ std::vector<GLFWobject> createObjectsFromMap(std::string &inFile)
         std::unordered_multimap<std::string, std::string> objectMap;
 
         std::string line;
+        int objectCounter = 1;
         while (std::getline(file, line))
         {
             if (line.empty()) // Empty line indicates the end of an object's attributes
             {
                 // call functions that constructor would call
+                setAttributesFromMap(objectMap, object);
                 object.calculateVertices(object.getShape(), object.getSize(), object.getVertices(), 1000);
                 object.setWeight(object.getWeight());
                 object.setTravelAngle(object.getTravelAngle());
                 object.setStartingPosition(object.getPosition());
                 object.setStartingTravelAngle(object.getTravelAngle());
                 object.setStartingVelocity(object.getVelocity());
+
+                std::cout << "Adding object " << objectCounter << " To object list." << std::endl;
+                std::cout << "Shape; " << object.getShape() << std::endl;
+                if (object.getShape() == 'c')
+                {
+                    std::cout << "Radius; " << object.getSize() << std::endl;
+                }
+                else if (object.getShape() == 'r')
+                {
+                    std::cout << "Width; " << object.getWidth() << std::endl;
+                    std::cout << "Height; " << object.getHeight() << std::endl;
+                }
+                std::cout << "Position; " << object.getXPosition() << ", " << object.getYPosition() << std::endl;
+                std::cout << "Velocity; " << object.getXVelocity() << ", " << object.getYVelocity() << std::endl;
                 // Add the constructed object to the vector
                 objects.push_back(object);
+                objectCounter++;
 
                 // Reset the object and objectMap for the next object
                 object.clear();
@@ -130,13 +147,13 @@ void setAttributesFromMap(std::unordered_multimap<std::string, std::string>& obj
         }
         else if (attribute == "Width")
         {
-            GLfloat width = std::stof(value);
-            object.setSize(width);
+            GLfloat size = std::stof(value);
+            object.setSize(size);
+            object.setWidth(object.getWidth());
         }
         else if (attribute == "Height")
         {
-            GLfloat height = std::stof(value);
-            object.setSize(height);
+            object.setHeight(object.getHeight());
         }
         else if (attribute == "Starting Velocity")
         {

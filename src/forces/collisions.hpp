@@ -208,20 +208,25 @@ void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool 
 void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
 {
 
-    float distance = glm::distance(circle.getPosition(), point.getPosition());
-    if (distance <= circle.getSize())
+    // Calculate distance between the centers of the circles
+    glm::vec2 center1 = circle.getPosition();
+    glm::vec2 center2 = point.getPosition();
+    float distance = glm::distance((center1), (center2));
+
+    // Check for collision
+    if (distance <= circle.getSize() + point.getSize())
     {
-        // Circle and point have collided
+        // Circles have collided
         circle.addCollision();
         point.addCollision();
-        if (DEBUG == TRUE)
-        {
-            std::cout << "Circle - Point Collision!" << std::endl;
-        }
-        circle.setXVelocity(- circle.getXVelocity());
-        point.setXVelocity(- point.getXVelocity());
-        circle.setYVelocity(- circle.getYVelocity());
-        point.setYVelocity(- point.getYVelocity());
+        // Move each circle half the distance away from eachother
+        moveHalfDistance((distance - circle.getSize()) / 2.0f, circle);
+        moveHalfDistance((distance - point.getSize()) / 2.0f, point);
+        // Reverse the direction of both circles
+        glm::vec2 newVelocity1 = -circle.getVelocity();
+        glm::vec2 newVelocity2 = -point.getVelocity();
+        circle.setVelocity(newVelocity1);
+        point.setVelocity(newVelocity2);
     }
 
     
@@ -258,43 +263,54 @@ void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle
     return;
 }
 
-void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DEBUG)
+void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DEBUG) //Programed the same as circle to rectangle collision to account for size
 {
-    // Calculate the AABB (Axis-Aligned Bounding Box) for the rectangle
+    // Calculate the closest point on the rectangle to the circle
     glm::vec2 rectPosition = rectangle.getPosition();
-    float rectLeft = rectPosition.x - rectangle.getWidth() / 2.0f;
-    float rectRight = rectPosition.x + rectangle.getWidth() / 2.0f;
-    float rectTop = rectPosition.y + rectangle.getHeight() / 2.0f;
-    float rectBottom = rectPosition.y - rectangle.getHeight() / 2.0f;
+    glm::vec2 closestPoint;
 
-    // Check if the point is within the rectangle
-    glm::vec2 pointPosition = point.getPosition();
-    if (pointPosition.x > rectLeft && pointPosition.x < rectRight && pointPosition.y > rectBottom && pointPosition.y < rectTop)
+    closestPoint.x = glm::clamp(point.getPosition().x, rectPosition.x - rectangle.getWidth() / 2.0f, rectPosition.x + rectangle.getWidth() / 2.0f);
+    closestPoint.y = glm::clamp(point.getPosition().y, rectPosition.y - rectangle.getHeight() / 2.0f, rectPosition.y + rectangle.getHeight() / 2.0f);
+
+    // Check if the closest point is within the circle
+    float distance = glm::distance(point.getPosition(), closestPoint);
+    if (distance <= point.getSize())
     {
-        // Point is inside the rectangle
-        rectangle.addCollision();
+        // Circle and rectangle have collided
         point.addCollision();
-        // Reverse the direction of both the rectangle and the point
-        glm::vec2 newVelocity1 = -rectangle.getVelocity();
-        glm::vec2 newVelocity2 = -point.getVelocity();
-        rectangle.setVelocity(newVelocity1);
-        point.setVelocity(newVelocity2);
+        rectangle.addCollision();
+        // Reverse the direction of the circle
+        float halfdistance = distance / 2.0f;
+        glm::vec2 newVelocity = -point.getVelocity();
+        point.setVelocity(newVelocity);
+        newVelocity = -rectangle.getVelocity();
+        rectangle.setVelocity(newVelocity);
     }
     return;
 }
 
-void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG)
+void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG) //Programed as two circles to account for the size change for vision
 {
-    if (point1.getPosition() == point2.getPosition())
+    // Calculate distance between the centers of the circles
+    glm::vec2 center1 = point1.getPosition();
+    glm::vec2 center2 = point2.getPosition();
+    float distance = glm::distance((center1), (center2));
+
+    // Check for collision
+    if (distance <= point1.getSize() + point2.getSize())
     {
-        //Points have collided
+        // Circles have collided
         point1.addCollision();
         point2.addCollision();
-        point1.setVelocity(- point1.getVelocity());
-        point2.setVelocity(- point2.getVelocity());
+        // Move each circle half the distance away from eachother
+        moveHalfDistance((distance - point1.getSize()) / 2.0f, point1);
+        moveHalfDistance((distance - point2.getSize()) / 2.0f, point2);
+        // Reverse the direction of both circles
+        glm::vec2 newVelocity1 = -point1.getVelocity();
+        glm::vec2 newVelocity2 = -point2.getVelocity();
+        point1.setVelocity(newVelocity1);
+        point2.setVelocity(newVelocity2);
     }
-    
-    return;
 }
 /******************************
 ******************************/
