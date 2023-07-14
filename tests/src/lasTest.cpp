@@ -1,5 +1,5 @@
 #include <iostream>
-#include <liblas/liblas.hpp>
+#include <liblas.hpp>
 #include <GL/glut.h>
 
 // Global variables
