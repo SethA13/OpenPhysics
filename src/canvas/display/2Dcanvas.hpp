@@ -3,7 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include "../uiHandlers/keyCallback.hpp"
-#include "../shaders/shaders.hpp"
+#include "../uiHandlers/mouseHandler.hpp"
+#include "../shaders/2Dshaders.hpp"
 #include "../../objects/definitions/objectsMasterInclude.hpp"
 #include "../../forces/collisions.hpp"
 #include "../../fileHandlers/inputProtocol.hpp"
@@ -23,15 +24,9 @@
 #include "../../../dependancies/glm/glm/gtc/type_ptr.hpp"
 #include "../../../dependancies/glm/glm/gtx/string_cast.hpp"
 
-// Function Prototypes
-void glutDisplay();
-int glutWindowInit(int argc, char** argv, int WIDTH, int HEIGHT, char *windowName, bool DEBUG);
-void glutDrawCircle(const Point & center, int radius);
-
-
-void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG);
+void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG);
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowWidth, int windowHeight, std::string outFile, bool DEBUG);
-std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG);
+std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG);
 std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &objects, bool DEBUG);
 void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[], 
                     std::vector<GLuint> &VAOs, 
@@ -42,48 +37,7 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
 void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBOs, GLuint& shaderProgram);
 
 
-void glutDisplay()
-{
-    glClear(GL_COLOR_BUFFER_BIT); // blit blank display
-    Point centerpoint(1040.0f/2, 720.0f/2);
-    glutDrawCircle(centerpoint, 10);
-    glutSwapBuffers();
-    return;
-}
-
-int glutWindowInit(int argc, char** argv, int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG)
-{
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE);
-    glutInitWindowSize(1040, 720);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow(windowName);
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glOrtho(0, 1040.0, 720.0, 0, -1, 1); // Orient and define grid
-    glutDisplayFunc(glutDisplay);
-    glutMainLoop();
-    return 0;
-}
-
-void glutDrawCircle(const Point & center, int radius)
-{
-   assert(radius >= 1.0);
-   const double increment = 1.0 / (double)radius;
-
-   // begin drawing
-   glBegin(GL_POLYGON);
-
-   // go around the circle
-   for (double radians = 0; radians < 3.14159 * 2.0; radians += increment)
-      glVertex2f(center.getXPosition() + (radius * cos(radians)),
-                 center.getYPosition() + (radius * sin(radians)));
-   
-   // complete drawing
-   glEnd();   
-}
-
-
-void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, bool DEBUG)
+void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG)
 {
     std::string outFile = "NULL";
     if (DEBUG == TRUE)
@@ -202,7 +156,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
         std::cout << "Shaders deleted!" << std::endl;
     }
         
-    std::vector<GLFWobject> objects = createGLFWObjects(inFile, outFile, DEBUG); // Update with all objects
+    std::vector<GLFWobject> objects = createGLFWObjects(inFile, outFile, scenario, scenarioEntries, DEBUG); // Update with all objects
 
     std::vector<std::vector<GLfloat>> allVertices = setupObjectVertices(objects, DEBUG); // for holding all vertices data
     
@@ -224,27 +178,16 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
     return;
 }
 
-std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, bool DEBUG)
+std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG)
 {
     std::vector<GLFWobject> objects; // Update with all objects
-    std::string scenario = "NULL";
-    std::list<std::string> scenarioEntries{ "1. circles", 
-                                            "2. rectangles", 
-                                            "3. points", 
-                                            "4. circle to rectangle", 
-                                            "5. circle to point", 
-                                            "6. rectangle to point", 
-                                            "7. all shapes",
-                                            "8. SRS scenario 1",
-                                            "9. SRS scenario 2",
-                                            "10. SRS scenario 3"};
 
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
     {
         objects = createObjectsFromMap(inFile);
     }
-    else
+    else if (scenario == "NULL")
     {
         std::cout << "Available scenarios; " << std::endl;
         for (std::string i : scenarioEntries)
@@ -255,6 +198,11 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
         std::cin >> scenario;  
         objects = scenarioPicker(scenario, scenarioEntries, outFile);
     }
+    else if (scenario != "NULL")
+    {
+        objects = scenarioPicker(scenario, scenarioEntries, outFile);
+    }
+    
     if (DEBUG == TRUE)
     {
         std::cout << "Objects made, added to vector" << std::endl;

@@ -1,5 +1,10 @@
 #include <GL/freeglut.h>
 
+
+void mouseHandler(int button, int state, int x, int y, bool left_click); 
+int mouseMotionHandler(int x, int y); 
+
+
 void mouseHandler(int button, int state, int x, int y, bool left_click) 
 {
     mouseMotionHandler(x, y);

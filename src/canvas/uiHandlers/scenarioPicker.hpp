@@ -194,8 +194,8 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject circle      ('c',                //Shape 
                                     0.1f,               //Size
                                     1000,               //NumSegments
-                                    {0.85f, 0.5f},      //Starting Position -- {x,y}
-                                    {0.003f, 0.003},    //Starting Velocity -- {x,y}
+                                    {-0.85f, -0.85f},   //Starting Position -- {x,y}
+                                    {0.008f, 0.01},       //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees
                                     true);              //Gravity
             objects.push_back(circle);
@@ -207,8 +207,8 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject rectangle   ('r',                //Shape 
                                     0.3f,               //Size
                                     1000,               //NumSegments
-                                    {0.6f, 0.6f},       //Starting Position -- {x,y}
-                                    {-0.01f, 0.0f},     //Starting Velocity -- {x,y}
+                                    {-0.84f, -0.8f},       //Starting Position -- {x,y}
+                                    {0.01f, 0.02f},     //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(rectangle);
@@ -220,8 +220,8 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject point       ('p',                //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments
-                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
-                                    {0.0001f, 0.002f},  //Starting Velocity -- {x,y}
+                                    {-0.9f, -0.9f},       //Starting Position -- {x,y}
+                                    {0.002f, 0.002f},  //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point);

@@ -28,12 +28,6 @@ std::vector<GLFWobject> createObjectsFromMap(std::string &inFile)
         * Starting position
         * Starting velocity
         */
-        std::string shape;
-        GLfloat size;
-        GLfloat width;
-        GLfloat height;
-        glm::vec2 startingPosition;
-        glm::vec2 startingVelocity;
         
         GLFWobject object   ('?',           //Shape 
                             0.0f,           //Size

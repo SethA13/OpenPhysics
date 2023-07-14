@@ -2,5 +2,5 @@
  * Master include file for shaders definitions
 **********************************************/
 
-#include "fragmentShader.hpp"
-#include "vertexShader.hpp"
+#include "2DfragmentShader.hpp"
+#include "2DvertexShader.hpp"
