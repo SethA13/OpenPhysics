@@ -64,6 +64,10 @@ std::vector<GLFWobject> createObjectsFromMap(std::string &inFile)
                     std::cout << "Width; " << object.getWidth() << std::endl;
                     std::cout << "Height; " << object.getHeight() << std::endl;
                 }
+                else if (object.getShape() == 'p')
+                {
+                    std::cout << "Visable Radius; " << object.getSize() << std::endl;
+                }
                 std::cout << "Position; " << object.getXPosition() << ", " << object.getYPosition() << std::endl;
                 std::cout << "Velocity; " << object.getXVelocity() << ", " << object.getYVelocity() << std::endl;
                 // Add the constructed object to the vector

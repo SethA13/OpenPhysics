@@ -230,7 +230,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
         else if (scenario == "SRS scenario 4" || scenario == "11")
         {
             flag = false;
-            outFile = "srsDemo1.ophy";
+            outFile = "srsDemo4.ophy";
             GLFWobject circle      ('c',                //Shape 
                                     0.1f,               //Size
                                     1000,               //NumSegments
@@ -242,7 +242,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject rectangle    ('r',               //Shape 
                                     0.3f,               //Size
                                     1000,               //NumSegments
-                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
+                                    {0.5f, -0.4f},       //Starting Position -- {x,y}
                                     {0.0f, 0.0f},       //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     false);             //Gravity

@@ -40,6 +40,11 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
             objectMap.insert(std::pair<std::string, std::string>("Width", std::to_string(objects[i].getWidth())));
             objectMap.insert(std::pair<std::string, std::string>("Shape", "Rectangle"));
         }
+        else if (objects[i].getShape() == 'p')
+        {
+            objectMap.insert(std::pair<std::string, std::string>("Size", std::to_string(objects[i].getSize())));
+            objectMap.insert(std::pair<std::string, std::string>("Shape", "Point"));
+        }
         else
         {
             objectMap.insert(std::pair<std::string, std::string>("Shape", "Point"));

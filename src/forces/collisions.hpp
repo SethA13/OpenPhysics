@@ -46,7 +46,7 @@ void moveHalfDistance(float halfdistance, GLFWobject &object);
 // TODO: find more elegant solution than if statements
 void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
 {
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "Object 1; " << object1.getShape() << std::endl;
         std::cout << "Object 2; " << object2.getShape() << std::endl;
@@ -55,7 +55,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     // Check circle cases
     if ((object1.getShape() == 'c' && object2.getShape() == 'c') || (object1.getShape() == 'C' && object2.getShape() == 'C'))
     {
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Circle - Circle check..." << std::endl;
         }
@@ -64,13 +64,13 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     }
     else if ((object1.getShape() == 'c' && object2.getShape() == 'r') || ((object1.getShape() == 'r') && object2.getShape() == 'c'))
     {
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Circle - Rectangle check..." << std::endl;
         }
         if (object1.getShape() == 'c')
         {
-            if (DEBUG == TRUE)
+            if (DEBUG == true)
             {
                 std::cout << "Object 1 Circle..." << std::endl;
             }
@@ -78,7 +78,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
         }
         else
         {
-            if (DEBUG == TRUE)
+            if (DEBUG == true)
             {
                 std::cout << "Object 2 Circle..." << std::endl;
             }
@@ -91,7 +91,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     }
     else if ((object1.getShape() == 'c' && object2.getShape() == 'p') || ((object1.getShape() == 'p') && object2.getShape() == 'c'))
     {
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Circle - Point check...!" << std::endl;
         }
@@ -107,7 +107,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     // Check rectangle cases
     else if ((object1.getShape() == 'r' && object2.getShape() == 'r'))
     {
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Rectangle - Rectangle check..." << std::endl;
         }
@@ -116,7 +116,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     }
     else if ((object1.getShape() == 'r' && object2.getShape() == 'p') || ((object1.getShape() == 'p') && object2.getShape() == 'r'))
     {   
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Rectangle - Point check..." << std::endl;
         }
@@ -133,7 +133,7 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
     // Check point case
     else if ((object1.getShape() == 'p' && object2.getShape() == 'p'))
     {
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "Point - Point check..." << std::endl;
         }
@@ -346,7 +346,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
     if ((center[0]) + circle.getSize() > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "left bounce" << std::endl;
         }
@@ -358,7 +358,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
     if ((center[0]) - circle.getSize() < -1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "right bounce" << std::endl;
         }
@@ -371,7 +371,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
     if ((center[1]) + circle.getSize() > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "top bounce" << std::endl;
         }
@@ -382,7 +382,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
     if ((center[1]) - circle.getSize() < -1.0f) // At edge of window
     {
         // Change y direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "bottom bounce" << std::endl;
         }
@@ -400,7 +400,7 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
     if ((center[0]) + (rectangle.getWidth() / 2) > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "left bounce" << std::endl;
         }
@@ -412,7 +412,7 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
     if ((center[0]) - (rectangle.getWidth() / 2) < -1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "right bounce" << std::endl;
         }
@@ -425,7 +425,7 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
     if ((center[1]) + (rectangle.getHeight() / 2) > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "top bounce" << std::endl;
         }
@@ -437,7 +437,7 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
     if ((center[1]) - (rectangle.getHeight() / 2) < -1.0f) // At edge of window
     {
         // Change y direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "bottom bounce" << std::endl;
         }
@@ -455,7 +455,7 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     if ((center[0]) > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "left bounce" << std::endl;
         }
@@ -467,7 +467,7 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     if ((center[0]) < -1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "right bounce" << std::endl;
         }
@@ -480,7 +480,7 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     if ((center[1]) > 1.0f) // At edge of window
     {
         // Change x direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "top bounce" << std::endl;
         }
@@ -492,7 +492,7 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     if ((center[1]) < -1.0f) // At edge of window
     {
         // Change y direction
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "bottom bounce" << std::endl;
         }
