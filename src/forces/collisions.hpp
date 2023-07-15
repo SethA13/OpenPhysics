@@ -158,8 +158,14 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
 void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBUG)
 {
     // Calculate distance between the centers of the circles
-    glm::vec2 center1 = circle1.getPosition();
-    glm::vec2 center2 = circle2.getPosition();
+    glm::vec2 center1 = {0, 0};
+    glm::vec2 center2 = {0, 0};
+
+    center1[0] = circle1.getXPosition() + circle1.getSize();
+    center1[1] = circle1.getYPosition() + circle1.getSize();
+
+    center2[0] = circle2.getXPosition() + circle2.getSize();
+    center2[1] = circle2.getYPosition() + circle2.getSize();
     float distance = glm::distance((center1), (center2));
 
     // Check for collision
@@ -169,8 +175,6 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
         circle1.addCollision();
         circle2.addCollision();
         // Move each circle half the distance away from eachother
-        moveHalfDistance((distance - circle1.getSize()) / 2.0f, circle1);
-        moveHalfDistance((distance - circle2.getSize()) / 2.0f, circle2);
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
@@ -220,8 +224,7 @@ void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
         circle.addCollision();
         point.addCollision();
         // Move each circle half the distance away from eachother
-        moveHalfDistance((distance - circle.getSize()) / 2.0f, circle);
-        moveHalfDistance((distance - point.getSize()) / 2.0f, point);
+        
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle.getVelocity();
         glm::vec2 newVelocity2 = -point.getVelocity();
@@ -347,7 +350,8 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
         {
             std::cout << "left bounce" << std::endl;
         }
-            
+        
+        circle.setXPosition(1.0 - circle.getSize());
         circle.setXVelocity((circle.getXVelocity() * -1.0f));
     }
     // Check left-most position
@@ -358,7 +362,8 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
         {
             std::cout << "right bounce" << std::endl;
         }
-            
+        
+        circle.setXPosition(-1.0 + circle.getSize());
         circle.setXVelocity((circle.getXVelocity() * -1.0f));
     }
 
@@ -370,7 +375,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
         {
             std::cout << "top bounce" << std::endl;
         }
-            
+        circle.setYPosition(1.0 - circle.getSize());
         circle.setYVelocity((circle.getYVelocity() * -1.0f));
     }
     // Check bottom-most position
@@ -381,7 +386,8 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
         {
             std::cout << "bottom bounce" << std::endl;
         }
-            
+        
+        circle.setYPosition(-1.0 + circle.getSize());
         circle.setYVelocity((circle.getYVelocity() * -0.9f));
     }
     return;
@@ -398,7 +404,8 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
         {
             std::cout << "left bounce" << std::endl;
         }
-            
+        
+        rectangle.setXPosition(1.0 - rectangle.getWidth());
         rectangle.setXVelocity((rectangle.getXVelocity() * -1.0f));
     }
     // Check left-most position
@@ -409,7 +416,8 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
         {
             std::cout << "right bounce" << std::endl;
         }
-            
+        
+        rectangle.setXPosition(-1.0 + rectangle.getWidth());
         rectangle.setXVelocity((rectangle.getXVelocity() * -1.0f));
     }
 
@@ -421,7 +429,8 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
         {
             std::cout << "top bounce" << std::endl;
         }
-            
+        
+        rectangle.setYPosition(1.0 - rectangle.getHeight());
         rectangle.setYVelocity((rectangle.getYVelocity() * -1.0f));
     }
     // Check bottom-most position
@@ -432,7 +441,8 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
         {
             std::cout << "bottom bounce" << std::endl;
         }
-            
+        
+        rectangle.setYPosition(-1.0 + rectangle.getHeight());
         rectangle.setYVelocity((rectangle.getYVelocity() * -0.9f));
     }
     return;
@@ -449,7 +459,8 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
         {
             std::cout << "left bounce" << std::endl;
         }
-            
+        
+        point.setXPosition(1.0 - point.getSize());
         point.setXVelocity((point.getXVelocity() * -1.0f));
     }
     // Check left-most position
@@ -460,7 +471,8 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
         {
             std::cout << "right bounce" << std::endl;
         }
-            
+        
+        point.setXPosition(-1.0 + point.getSize());
         point.setXVelocity((point.getXVelocity() * -1.0f));
     }
 
@@ -472,7 +484,8 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
         {
             std::cout << "top bounce" << std::endl;
         }
-            
+        
+        point.setYPosition(1.0 - point.getSize());
         point.setYVelocity((point.getYVelocity() * -1.0f));
     }
     // Check bottom-most position
@@ -483,7 +496,8 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
         {
             std::cout << "bottom bounce" << std::endl;
         }
-            
+        
+        point.setYPosition(-1.0 + point.getSize());
         point.setYVelocity((point.getYVelocity() * -0.9f));
     }
     return;

@@ -21,6 +21,7 @@ float POINTSIZE = 0.005f;
  * 8.   SRS scenario 1
  * 9.   SRS scenario 2
  * 10.  SRS scenario 3
+ * 11.  SRS scenario 4
 *****************************/
 
 std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile);
@@ -81,16 +82,16 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject point1       ('p',               //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments
-                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
-                                    {0.0001f, 0.002f},  //Starting Velocity -- {x,y}
+                                    {0.5f, 0.0f},       //Starting Position -- {x,y}
+                                    {-0.005f, 0.0f},  //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point1);
             GLFWobject point2       ('p',               //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments
-                                    {-0.95f, 0.8f},     //Starting Position -- {x,y}
-                                    {0.005f, -0.004f},  //Starting Velocity -- {x,y}
+                                    {-0.5f, 0.0f},     //Starting Position -- {x,y}
+                                    {0.005f, 0.0f},  //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point2);
@@ -195,7 +196,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
                                     0.1f,               //Size
                                     1000,               //NumSegments
                                     {-0.85f, -0.85f},   //Starting Position -- {x,y}
-                                    {0.008f, 0.01},       //Starting Velocity -- {x,y}
+                                    {0.008f, 0.01},     //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees
                                     true);              //Gravity
             objects.push_back(circle);
@@ -207,7 +208,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject rectangle   ('r',                //Shape 
                                     0.3f,               //Size
                                     1000,               //NumSegments
-                                    {-0.84f, -0.8f},       //Starting Position -- {x,y}
+                                    {-0.84f, -0.8f},    //Starting Position -- {x,y}
                                     {0.01f, 0.02f},     //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
@@ -220,11 +221,32 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject point       ('p',                //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments
-                                    {-0.9f, -0.9f},       //Starting Position -- {x,y}
-                                    {0.002f, 0.002f},  //Starting Velocity -- {x,y}
+                                    {-0.9f, -0.9f},     //Starting Position -- {x,y}
+                                    {0.002f, 0.002f},   //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point);
+        }
+        else if (scenario == "SRS scenario 4" || scenario == "11")
+        {
+            flag = false;
+            outFile = "srsDemo1.ophy";
+            GLFWobject circle      ('c',                //Shape 
+                                    0.1f,               //Size
+                                    1000,               //NumSegments
+                                    {-0.85f, -0.85f},   //Starting Position -- {x,y}
+                                    {0.008f, 0.01},     //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees
+                                    true);              //Gravity
+            objects.push_back(circle);
+            GLFWobject rectangle    ('r',               //Shape 
+                                    0.3f,               //Size
+                                    1000,               //NumSegments
+                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
+                                    {0.0f, 0.0f},       //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    false);             //Gravity
+            objects.push_back(rectangle);
         }
         else
         {
