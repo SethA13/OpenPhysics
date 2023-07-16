@@ -64,7 +64,9 @@ std::unordered_map<int, std::unordered_multimap<std::string, std::string>> creat
 
 void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string, std::string>>& objectMaps, std::string outFile)
 {
-    if (outFile != "NULL")
+    std::string prefix = "ophyFiles/";
+    
+    if (outFile+prefix != "ophyFiles/NULL")
     {
         std::ofstream outfile(outFile);
         if (outfile.is_open())

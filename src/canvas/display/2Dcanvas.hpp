@@ -186,6 +186,7 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
     if(inFile != "NULL")
     {
         objects = createObjectsFromMap(inFile);
+        outFile = inFile;
     }
     else if (scenario == "NULL")
     {

@@ -77,6 +77,7 @@ void checkTerminalParams(	int argc, char** argv,
 							std::list<std::string> &scenarioEntries, 
 							bool &DEBUG)
 {
+	std::string prefix = "ophyFiles/";
 	if (argc > 4)
 	{
 		bool arg4 = argv[4];
@@ -86,7 +87,7 @@ void checkTerminalParams(	int argc, char** argv,
 		scenario = arg3;
 
 		std::string arg2(argv[2]);
-		inFile = arg2;
+		inFile = prefix + arg2;
 
 		std::string arg1(argv[1]);
 		initType = arg1;
@@ -97,7 +98,7 @@ void checkTerminalParams(	int argc, char** argv,
 		scenario = arg3;
 
 		std::string arg2(argv[2]);
-		inFile = arg2;
+		inFile = prefix + arg2;
 
 		std::string arg1(argv[1]);
 		initType = arg1;
@@ -106,7 +107,7 @@ void checkTerminalParams(	int argc, char** argv,
 	else if (argc > 2)
 	{
 		std::string arg2(argv[2]);
-		inFile = arg2;
+		inFile = prefix + arg2;
 
 		std::string arg1(argv[1]);
 		initType = arg1;
