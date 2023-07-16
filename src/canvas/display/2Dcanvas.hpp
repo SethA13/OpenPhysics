@@ -342,6 +342,13 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
+            // Calculate the number of collisions for the current object
+            int numCollisions = objects[i].getCollisions().size();
+
+            // Update the numCollisions uniform value for the shader
+            GLint numCollisionsLocation = glGetUniformLocation(shaderProgram, "numCollisions");
+            glUniform1i(numCollisionsLocation, numCollisions);
+
             glBindVertexArray(VAOs[i]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, objects[i].getVertices().size() / 2);
         }
