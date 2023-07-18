@@ -33,6 +33,7 @@ private:
     glm::vec2 startingPosition;
     glm::vec2 endingPosition;
     std::vector<glm::vec2> collisions;
+    int bottomBoundaryCount;
 public:
     // Constructor declaration
     GLFWobject(char shape, GLfloat size, GLint numSegments, glm::vec2 position, glm::vec2 velocity, GLfloat rotation, bool shouldApplyGravity);
@@ -67,6 +68,7 @@ public:
     const GLfloat getXVelocity();
     const GLfloat getYVelocity();
     const GLfloat getRotation() const;
+    const int getBottomBoundaryCount() const;
 
     // Setters
     void setGravityEnable(bool flag);
@@ -88,6 +90,7 @@ public:
     void setSize(GLfloat newSize);
     void setWidth(GLfloat newWidth);
     void setHeight(GLfloat newHeight);
+    void updateBottomBoundaryCount();
 
 
     void addCollision();
@@ -305,6 +308,11 @@ std::vector<glm::vec2> GLFWobject::getCollisions()
     return collisions;
 }
 
+const int GLFWobject::getBottomBoundaryCount() const
+{
+    return bottomBoundaryCount;
+}
+
 // Setters
 void GLFWobject::setGravityEnable(bool flag)
 {
@@ -446,6 +454,11 @@ void GLFWobject::clear()
     glm::vec2 startingPosition = {};
     glm::vec2 endingPosition = {};
     std::vector<glm::vec2> collisions = {};
+}
+
+void GLFWobject::updateBottomBoundaryCount()
+{
+    bottomBoundaryCount++;
 }
 
 #endif // GLFWOBJECT_H

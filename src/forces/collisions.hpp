@@ -398,6 +398,11 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG)
         {
             std::cout << "bottom bounce" << std::endl;
         }
+        circle.updateBottomBoundaryCount();
+        if (circle.getBottomBoundaryCount() == 1)
+        {
+            circle.setEndingPosition(circle.getPosition());
+        }
         
         circle.setYPosition(-1.0 + circle.getSize());
         circle.setYVelocity((circle.getYVelocity() * -0.9f));
@@ -454,6 +459,11 @@ void handleRectangleBoundary(GLFWobject &rectangle, bool DEBUG)
             std::cout << "bottom bounce" << std::endl;
         }
         
+        rectangle.updateBottomBoundaryCount();
+        if (rectangle.getBottomBoundaryCount() == 1)
+        {
+            rectangle.setEndingPosition(rectangle.getPosition());
+        }
         rectangle.setYPosition(-1.0 + rectangle.getHeight());
         rectangle.setYVelocity((rectangle.getYVelocity() * -0.9f));
     }
@@ -509,6 +519,11 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
             std::cout << "bottom bounce" << std::endl;
         }
         
+        point.updateBottomBoundaryCount();
+        if (point.getBottomBoundaryCount() == 1)
+        {
+            point.setEndingPosition(point.getPosition());
+        }
         point.setYPosition(-1.0 + point.getSize());
         point.setYVelocity((point.getYVelocity() * -0.9f));
     }

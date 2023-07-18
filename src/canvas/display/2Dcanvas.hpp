@@ -316,13 +316,8 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
 
             if (objects[i].getYPosition() + objects[i].getSize() <= -1.0f)
             {
-                if (objects[i].getYVelocity() <= 0.3f)
-                {
-                    //objects[i].setGravityEnable(FALSE);
-                    objects[i].setEndingPosition(objects[i].getPosition());
-                }
-                else
-                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
+                
+                objects[i].setYPosition((-1.0 + objects[i].getSize()));
                 
             }
             
