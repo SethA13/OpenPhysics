@@ -27,6 +27,9 @@ public:
     Point()            : xPosition(0.0), yPosition(0.0)  {}
     Point(bool check)  : xPosition(0.0), yPosition(0.0)  {}
 
+    void addX(float dx);
+    void addY(float dy);
+
     // destructor
     ~Point();
 };

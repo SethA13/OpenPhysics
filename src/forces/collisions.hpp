@@ -44,7 +44,7 @@ void moveHalfDistance(float halfdistance, GLFWobject &object);
 
 // check if two objects are colliding
 // TODO: find more elegant solution than if statements
-void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
+void handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
 {
     if (DEBUG == true)
     {
@@ -85,8 +85,6 @@ void  handleCollision(GLFWobject &object1, GLFWobject &object2, bool DEBUG)
                 
             circleToRectangleCollision(object2, object1, DEBUG);
         }
-            
-        
         return;
     }
     else if ((object1.getShape() == 'c' && object2.getShape() == 'p') || ((object1.getShape() == 'p') && object2.getShape() == 'c'))
@@ -161,12 +159,14 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
     glm::vec2 center1 = {0, 0};
     glm::vec2 center2 = {0, 0};
 
-    center1[0] = circle1.getXPosition() + circle1.getSize();
-    center1[1] = circle1.getYPosition() + circle1.getSize();
+    center1[0] = circle1.getXPosition();
+    center1[1] = circle1.getYPosition();
 
-    center2[0] = circle2.getXPosition() + circle2.getSize();
-    center2[1] = circle2.getYPosition() + circle2.getSize();
+    center2[0] = circle2.getXPosition();
+    center2[1] = circle2.getYPosition();
     float distance = glm::distance((center1), (center2));
+
+   
 
     // Check for collision
     if (distance <= circle1.getSize() + circle2.getSize())
@@ -175,6 +175,16 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
         circle1.addCollision();
         circle2.addCollision();
         // Move each circle half the distance away from eachother
+        float halfDistance = distance / 2.0;
+
+         // calculate normal vectors for point of collision
+        float normalXVec = (circle2.getXPosition() - circle1.getXPosition()) / distance;
+        float normalYVec = (circle2.getYPosition() - circle1.getYPosition()) / distance;
+
+        // calculate p value with velocities of both circles
+        float pValue = 2 * (circle1.getXVelocity() * normalXVec + circle1.getYVelocity() * normalYVec - circle2.getXVelocity() * normalXVec - circle2.getYVelocity() * normalYVec) / (circle1.getWeight() + circle2.getWeight());
+        
+
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
@@ -211,7 +221,7 @@ void circleToRectangleCollision(GLFWobject &circle, GLFWobject &rectangle, bool 
 
 void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
 {
-
+    // Using same mathmatics as circle collisions because of point size
     // Calculate distance between the centers of the circles
     glm::vec2 center1 = circle.getPosition();
     glm::vec2 center2 = point.getPosition();
@@ -266,7 +276,8 @@ void rectangleToRectangleCollision(GLFWobject &rectangle1, GLFWobject &rectangle
     return;
 }
 
-void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DEBUG) //Programed the same as circle to rectangle collision to account for size
+void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DEBUG) 
+//Programed the same as circle to rectangle collision to account for size
 {
     // Calculate the closest point on the rectangle to the circle
     glm::vec2 rectPosition = rectangle.getPosition();
@@ -292,7 +303,8 @@ void rectangleToPointCollision(GLFWobject &rectangle, GLFWobject &point, bool DE
     return;
 }
 
-void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG) //Programed as two circles to account for the size change for vision
+void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG) 
+//Programed as two circles to account for the size change for vision
 {
     // Calculate distance between the centers of the circles
     glm::vec2 center1 = point1.getPosition();

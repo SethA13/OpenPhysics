@@ -46,7 +46,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             objects.push_back(circle1);
 
             GLFWobject circle2      ('c',               //Shape 
-                                    0.1f,               //Size
+                                    0.2f,               //Size
                                     1000,               //NumSegments
                                     {0.3f, -0.1f},      //Starting Position -- {x,y}
                                     {0.002f, -0.003f},  //Starting Velocity -- {x,y}
@@ -182,11 +182,35 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             GLFWobject point       ('p',                //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments
-                                    {0.0f, 0.0f},       //Starting Position -- {x,y}
+                                    {-0.2f, -0.5f},       //Starting Position -- {x,y}
                                     {0.0001f, 0.002f},  //Starting Velocity -- {x,y}
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point);
+            GLFWobject circle2      ('c',                //Shape 
+                                    0.1f,               //Size
+                                    1000,               //NumSegments
+                                    {-0.85f, -0.5f},      //Starting Position -- {x,y}
+                                    {-0.003f, -0.003},    //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees
+                                    true);              //Gravity
+            objects.push_back(circle2);
+            GLFWobject rectangle2   ('r',                //Shape 
+                                    0.3f,               //Size
+                                    1000,               //NumSegments
+                                    {-0.6f, -0.6f},       //Starting Position -- {x,y}
+                                    {0.01f, 0.0f},     //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    true);              //Gravity
+            objects.push_back(rectangle2);
+            GLFWobject point2       ('p',                //Shape 
+                                    POINTSIZE,          //Size
+                                    1000,               //NumSegments
+                                    {-0.5f, 0.5f},       //Starting Position -- {x,y}
+                                    {-0.0001f, -0.002f},  //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees 
+                                    true);              //Gravity
+            objects.push_back(point2);
         }
         else if (scenario == "SRS scenario 1" || scenario == "8")
         {
@@ -247,6 +271,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
                                     0,                  //Rotation -- in degrees 
                                     false);             //Gravity
             objects.push_back(rectangle);
+            rectangle.setRotation(90);
             GLFWobject point       ('p',                //Shape 
                                     POINTSIZE,          //Size
                                     1000,               //NumSegments

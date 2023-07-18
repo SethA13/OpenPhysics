@@ -366,6 +366,9 @@ void GLFWobject::calculateAngleOfTravel(GLfloat &angle)
 
 void GLFWobject::updatePosition(GLfloat deltaTime)
 {
+    // Rotate the velocity vector based on the rotation angle
+    glm::mat2 rotationMatrix(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));
+    velocity = rotationMatrix * velocity;
     position += velocity * deltaTime;
 }
 

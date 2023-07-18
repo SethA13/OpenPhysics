@@ -10,6 +10,7 @@
 #include "../../fileHandlers/inputProtocol.hpp"
 #include "../../fileHandlers/outputProtocol.hpp"
 #include "../uiHandlers/scenarioPicker.hpp"
+#include "../uiHandlers/billboard.hpp"
 
 #include <iostream>
 #include <string>
@@ -267,14 +268,12 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
 
 void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::vector<GLuint>& VAOs, std::vector<GLFWobject>& objects, int windowWidth, int windowHeight, std::string outFile, bool DEBUG)
 {
-    if (DEBUG == TRUE)
-    {
-        std::cout << "Main loop called!" << std::endl;
-    }
+    std::list<std::string> colorSchemeEntries = {   "1. By collision",
+                                                    "2. random"};
+    
     // Main loop
     while (!glfwWindowShouldClose(window))
-    {
-        
+    {   
         // Check and call events
         glfwPollEvents();
 
@@ -319,9 +318,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             {
                 if (objects[i].getYVelocity() <= 0.3f)
                 {
-                    objects[i].setYPosition((-1.0 + objects[i].getSize()));
                     //objects[i].setGravityEnable(FALSE);
-                    objects[i].setYVelocity(0.0);
                     objects[i].setEndingPosition(objects[i].getPosition());
                 }
                 else
@@ -330,9 +327,23 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             }
             
         }
+        //Check collision number
+        for (auto i = 0; i < objects.size(); ++i)
+        {
+            
+            if (objects[i].getCollisions().size() >= 11)
+            {
+                // this doesn't work, so just move them out of view
+                // auto iterator = objects.begin() + i;
+                // objects.erase(iterator);
+
+                objects[i].setPosition({2.0, 2.0});
+                objects[i].setVelocity({0.0, 0.0});
+            }
+        }
 
         // Draw the objects
-        for (size_t i = 0; i < objects.size(); ++i)
+        for (auto i = 0; i < objects.size(); ++i)
         {
             // Update model matrix for the current object
             glm::mat4 modelMatrix = glm::mat4(1.0f);

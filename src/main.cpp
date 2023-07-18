@@ -152,7 +152,7 @@ void checkTerminalParams(	int argc, char** argv,
 	
 	if (!std::filesystem::exists(inFile) && inFile != "NULL")
 	{
-		std::cout << "Declared file doesn't exist. Exiting..." << std::endl;
+		std::cout << "Declared file " << inFile << " doesn't exist. Exiting..." << std::endl;
 		std::exit(-1);
 	}
 	

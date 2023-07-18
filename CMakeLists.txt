@@ -103,7 +103,6 @@ add_executable(${PLANETS} ${PLANETS_SRCS})
 add_executable(${CIRCLE} ${CIRCLE_SRCS})
 add_executable(${RECTANGLE} ${RECT_SRCS})
 add_executable(${POINT} ${POINT_SRCS})
-add_executable(${GRAVITY} ${GRAVITY_SRCS})
 
 # Main project executable
 add_executable(${PROJECT_NAME} ${PROJECT_SRCS})
@@ -115,7 +114,6 @@ set_target_properties(${PLANETS} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TESTBINDI
 set_target_properties(${CIRCLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TESTBINDIR})
 set_target_properties(${RECTANGLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TESTBINDIR})
 set_target_properties(${POINT} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TESTBINDIR})
-set_target_properties(${GRAVITY} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TESTBINDIR})
 
 # Set the output directories for the project
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJBINDIR})
@@ -127,7 +125,6 @@ target_link_libraries(${PLANETS} ${LIBRARIES})
 target_link_libraries(${CIRCLE} ${LIBRARIES})
 target_link_libraries(${RECTANGLE} ${LIBRARIES})
 target_link_libraries(${POINT} ${LIBRARIES})
-target_link_libraries(${GRAVITY} ${LIBRARIES})
 
 # Link libraries to the main project
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})

@@ -5,8 +5,8 @@ PROJECTDIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(OS),Windows_NT)
 	CC = g++
-	CFLAGS = -std=c++17 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm
-	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm -Wl,-rpath=$(PROJECTDIR)dependancies/glm -lglm_shared
+	CFLAGS = -std=c++17 -Wall -Wextra -I$(PROJECTDIR)dependancies/glm/glm -I/C:/Users/seth1/OneDrive/Documents/vcpkg/installed/x86-windows/include/liblas
+	LDFLAGS = -lopengl32 -lglu32 -lfreeglut -lglew32 -lglfw3 -L$(PROJECTDIR)dependancies/glm -Wl,-rpath=$(PROJECTDIR)dependancies/glm -L/C:\Users\seth1\OneDrive\Documents\vcpkg\installed\x86-windows\lib -lglm_shared -llas
 else
 	CC = g++
 	CFLAGS = -std=c++17 -Wall -Wextra
@@ -24,6 +24,7 @@ PROJBINDIR = .\bin
 OBJCPPDIR = $(PROJSRCSDIR)\objects\functions
 OBJHPPDIR = $(PROJSRCSDIR)\objects\definitions
 FILEDIR = $(PROJSRCSDIR)\fileHandlers
+UIDIR = $(PROJSRCSDIR)\canvas\uiHandlers
 
 CIRCLEOBJ = circle
 POINTOBJ = point
@@ -32,6 +33,7 @@ OBJOBJ = object
 VELOCITYOBJ = velocity
 FILEWRITER = outputProtocol
 FILEREADER = inputProtocol
+UIDRAW = billboard
 
 BASEOBJS = $(OBJCPPDIR)\$(CIRCLEOBJ).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJCPPDIR)\$(RECTOBJ).cpp $(OBJCPPDIR)\$(OBJOBJ).cpp $(OBJCPPDIR)\$(VELOCITYOBJ).cpp
 
@@ -76,9 +78,17 @@ POINT = pointTest
 POINT_SRCS = $(TESTSRCSDIR)\$(POINT).cpp
 POINT_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(POINT_SRCS:.cpp=.o))
 
-GRAVITY = gravityTest
-GRAVITY_SRCS = $(TESTSRCSDIR)\$(GRAVITY).cpp $(OBJHPPDIR)\$(GRAVCIRCLEOBJ).hpp
-GRAVITY_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(GRAVITY_SRCS:.cpp=.o))
+MACHINE = MLTest
+MACHINE_SRCS = $(TESTSRCSDIR)\$(MACHINE).cpp
+MACHINE_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(MACHINE_SRCS:.cpp=.o))
+
+LAS = lasTest
+LAS_SRCS = $(TESTSRCSDIR)\$(LAS).cpp
+LAS_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(LAS_SRCS:.cpp=.o))
+
+BILLBOARD = billboardTest
+BILLBOARD_SRCS = $(TESTSRCSDIR)\$(BILLBOARD).cpp
+BILLBOARD_OBJS = $(patsubst $(TESTSRCSDIR)\%.cpp, $(TESTOBJSDIR)\%.o, $(BILLBOARD_SRCS:.cpp=.o))
 #####################################
  # clean test declaration prototypes
 #####################################
@@ -88,13 +98,15 @@ CLEAN_PLANETS = clean_planets
 CLEAN_CIRCLE = clean_circle
 CLEAN_RECTANGLE = clean_rectangle
 CLEAN_POINT = clean_point
-CLEAN_GRAVITY = clean_gravity
+CLEAN_MACHINE = clean_machine
+CLEAN_LAS = clean_las
+CLEAN_BILLBOARD = clean_billboard
 
 #####################################
  # project declaration prototypes
 #####################################
 PROJECT = main
-PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJHPPDIR)\$(GLFWOBJECT).hpp $(FILEDIR)\$(FILEWRITER).hpp $(FILEDIR)\$(FILEREADER).hpp
+PROJECT_SRCS = $(PROJSRCSDIR)\$(PROJECT).cpp $(OBJCPPDIR)\$(POINTOBJ).cpp $(OBJHPPDIR)\$(GLFWOBJECT).hpp $(FILEDIR)\$(FILEWRITER).hpp $(FILEDIR)\$(FILEREADER).hpp $(UIDIR)\$(UIDRAW).hpp
 PROJECT_OBJS = $(patsubst $(PROJSRCSDIR)\%.cpp, $(PROJOBJSDIR)\%.o, $(PROJECT_SRCS:.cpp=.o))
 ########################################
  # clean project declaration prototypes
@@ -133,7 +145,7 @@ all: tests project
 
 clean_all: clean_tests clean_project
 
-tests: glut collisions planets circle rectangle point gravity
+tests: glut collisions planets circle rectangle point las
 
 clean_tests: $(CLEAN_GLUTTEST) $(CLEAN_COLLISIONS) $(CLEAN_PLANETS) $(CLEAN_CIRCLE) $(CLEAN_RECTANGLE) $(CLEAN_POINT) $(CLEAN_GRAVITY)
 
@@ -238,20 +250,52 @@ $(CLEAN_POINT):
 	del /Q $(TESTOBJSDIR)\$(POINT).o $(TESTBINDIR)\$(POINT).exe
 
 #####################################
-# for making the gravity test file
+# for making the Machine learning test file
 #####################################
-gravity: $(GRAVITY)
-	@echo "gravityTest built!"
-	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(GRAVITY).o' -Destination '$(TESTOBJSDIR)\$(GRAVITY).o' -force"
+machine: $(MACHINE)
+	@echo "machineTest built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(MACHINE).o' -Destination '$(TESTOBJSDIR)\$(MACHINE).o' -force"
 
-$(GRAVITY): $(GRAVITY_OBJS)
+$(MACHINE): $(MACHINE_OBJS)
 	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(CLEAN_GRAVITY):
-	del /Q $(TESTOBJSDIR)\$(GRAVITY).o $(TESTBINDIR)\$(GRAVITY).exe
+$(CLEAN_MACHINE):
+	del /Q $(TESTOBJSDIR)\$(MACHINE).o $(TESTBINDIR)\$(MACHINE).exe
+
+#####################################
+# for making the LAS/LAZ test file
+#####################################
+las: $(LAS)
+	@echo "LAStest built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(LAS).o' -Destination '$(TESTOBJSDIR)\$(LAS).o' -force"
+
+$(LAS): $(LAS_OBJS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_LAS):
+	del /Q $(TESTOBJSDIR)\$(LAS).o $(TESTBINDIR)\$(LAS).exe
+
+#####################################
+# for making the billboard test file
+#####################################
+billboard: $(BILLBOARD)
+	@echo "billboard test built!"
+	powershell.exe -Command "Move-Item -Path '$(TESTSRCSDIR)\$(BILLBOARD).o' -Destination '$(TESTOBJSDIR)\$(BILLBOARD).o' -force"
+
+$(BILLBOARD): $(BILLBOARD_OBJS)
+	$(CC) $(CFLAGS) -o $(TESTBINDIR)\$@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CLEAN_BILLBOARD):
+	del /Q $(TESTOBJSDIR)\$(BILLBOARD).o $(TESTBINDIR)\$(BILLBOARD).exe
 ##############################################################
 #						Project Files
 ##############################################################

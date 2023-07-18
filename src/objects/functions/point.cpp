@@ -41,3 +41,13 @@ void Point::setYPosition(float y)
 Point::~Point()
 {
 }
+
+void Point::addX(float dx)
+{
+    setXPosition(getXPosition() + dx);
+}
+
+void Point::addY(float dy)
+{
+    setYPosition(getYPosition() + dy);
+}
