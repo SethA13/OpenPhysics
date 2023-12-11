@@ -15,6 +15,7 @@ GLfloat PI = 3.14159;
 class GLFWobject
 {
 private:
+    bool inCollision;
     bool shouldApplyGravity;
     char shape;
     GLfloat size;
@@ -24,6 +25,7 @@ private:
     GLint numSegments;
     std::vector<GLfloat> vertices;
     glm::vec2 position;
+    glm::vec2 lastPosition;
     glm::vec2 velocity;
     glm::vec2 startingVelocity;
     GLfloat rotation;
@@ -41,6 +43,7 @@ public:
     void calculateVertices(const char shape, GLfloat size, std::vector<GLfloat> &vertices, GLint numSegments);
 
     // Getters
+    bool getCollision();
     bool getGravityEnable();
     char getShape();
     std::vector<GLfloat>& getVertices();
@@ -69,8 +72,10 @@ public:
     const GLfloat getYVelocity();
     const GLfloat getRotation() const;
     const int getBottomBoundaryCount() const;
+    const glm::vec2& getLastPosition() const;
 
     // Setters
+    void setCollision(bool collision);
     void setGravityEnable(bool flag);
     void setPosition(const glm::vec2& newPosition);
     void setXPosition(GLfloat newXPosition);
@@ -94,6 +99,7 @@ public:
 
 
     void addCollision();
+    void updateLastPosition(const glm::vec2& position);
 
     //Calculations
     void calculateAngleOfTravel(GLfloat &angle);
@@ -181,6 +187,11 @@ void GLFWobject::calculateVertices(const char shape, GLfloat size, std::vector<G
 }
 
 // Getters
+bool GLFWobject::getCollision()
+{
+    return inCollision;
+}
+
 bool GLFWobject::getGravityEnable()
 {
     return shouldApplyGravity;
@@ -313,7 +324,17 @@ const int GLFWobject::getBottomBoundaryCount() const
     return bottomBoundaryCount;
 }
 
+const glm::vec2& GLFWobject::getLastPosition() const
+{
+    return lastPosition;
+}
+
 // Setters
+void GLFWobject::setCollision(bool collision)
+{
+    inCollision = collision;
+}
+
 void GLFWobject::setGravityEnable(bool flag)
 {
     shouldApplyGravity = flag;
@@ -361,7 +382,13 @@ void GLFWobject::setEndingPosition(const glm::vec2& position)
 
 void GLFWobject::addCollision()
 {
+    //
     collisions.push_back(position);
+}
+
+void GLFWobject::updateLastPosition(const glm::vec2& position)
+{
+    lastPosition = position;
 }
 
 void GLFWobject::calculateAngleOfTravel(GLfloat &angle)

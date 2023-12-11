@@ -79,6 +79,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
         glfwTerminate();
         std::exit(-1);
     }
+    
 
     // Set the current context to the GLFW window
     glfwMakeContextCurrent(window);
@@ -156,8 +157,12 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
     {
         std::cout << "Shaders deleted!" << std::endl;
     }
-        
-    std::vector<GLFWobject> objects = createGLFWObjects(inFile, outFile, scenario, scenarioEntries, DEBUG); // Update with all objects
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, WIDTH, 0, HEIGHT, -1.0, 1.0);
+
+    objects = createGLFWObjects(inFile, outFile, scenario, scenarioEntries, DEBUG); // Update with all objects
 
     std::vector<std::vector<GLfloat>> allVertices = setupObjectVertices(objects, DEBUG); // for holding all vertices data
     
@@ -181,12 +186,11 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
 
 std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG)
 {
-    std::vector<GLFWobject> objects; // Update with all objects
-
     //If an infile is declared, attempt to read from it
     if(inFile != "NULL")
     {
         objects = createObjectsFromMap(inFile);
+        inFile.erase(0, inFile.find("/")+1);
         outFile = inFile;
     }
     else if (scenario == "NULL")
@@ -284,6 +288,24 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         // Use the shader program
         glUseProgram(shaderProgram);
 
+        // Update for snake animation
+        if (upKeyPressed)
+        {
+            moveSnakeUp(objects);
+        }
+        if (downKeyPressed)
+        {
+            moveSnakeDown(objects);
+        }
+        if (leftKeyPressed)
+        {
+            moveSnakeLeft(objects);
+        }
+        if (rightKeyPressed)
+        {
+            moveSnakeRight(objects);
+        }
+        
         // Update positions of all circles
         for (auto& object : objects)
         {
@@ -293,6 +315,11 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         // Perform collision detection and handling
         for (size_t i = 0; i < objects.size(); i++)
         {
+            if (objects[i].getLastPosition() != objects[i].getPosition())
+            {
+                std::cout << "Object " << i << " current position; {" << objects[i].getXPosition()
+                << "," << objects[i].getYPosition() << "}" << std::endl;
+            }
             if (DEBUG == TRUE)
             {
                 std::cout << "Current object to check window bounds; " << objects[i].getShape() << std::endl;
@@ -301,7 +328,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
             checkWindowBounds(objects[i], DEBUG);
 
             for (size_t j = i + 1; j < objects.size(); j++)
-            {
+            {   
                 if (DEBUG == TRUE)
                 {
                     std::cout << "Handling collisions for " << objects[i].getShape() << " and " << objects[j].getShape() << std::endl;
@@ -320,7 +347,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
                 objects[i].setYPosition((-1.0 + objects[i].getSize()));
                 
             }
-            
+            objects[i].updateLastPosition(objects[i].getPosition());
         }
         //Check collision number
         for (auto i = 0; i < objects.size(); ++i)
@@ -361,6 +388,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
         }
         // Swap the buffers
         glfwSwapBuffers(window);
+
     }
     glBindVertexArray(0);
     std::unordered_map<int, std::unordered_multimap<std::string, std::string>> objectMaps = createObjectMaps(objects);

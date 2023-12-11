@@ -38,7 +38,7 @@ void handleCircleBoundary(GLFWobject &circle, bool DEBUG);
 void handleRectangleBoundary(GLFWobject &point, bool DEBUG);
 void handlePointBoundary(GLFWobject &point, bool DEBUG);
 
-void moveHalfDistance(float halfdistance, GLFWobject &object);
+void moveHalfDistance(float distance, GLFWobject &object, GLFWobject &object2, glm::vec2 &center1, glm::vec2 &center2);
 
 
 
@@ -174,18 +174,11 @@ void circleToCircleCollision(GLFWobject &circle1, GLFWobject &circle2, bool DEBU
         // Circles have collided
         circle1.addCollision();
         circle2.addCollision();
-        // Move each circle half the distance away from eachother
-        float halfDistance = distance / 2.0;
 
-         // calculate normal vectors for point of collision
-        float normalXVec = (circle2.getXPosition() - circle1.getXPosition()) / distance;
-        float normalYVec = (circle2.getYPosition() - circle1.getYPosition()) / distance;
+        // Move each circle the half distance away
+        moveHalfDistance(distance, circle1, circle2, center1, center2);
 
-        // calculate p value with velocities of both circles
-        float pValue = 2 * (circle1.getXVelocity() * normalXVec + circle1.getYVelocity() * normalYVec - circle2.getXVelocity() * normalXVec - circle2.getYVelocity() * normalYVec) / (circle1.getWeight() + circle2.getWeight());
-        
-
-        // Reverse the direction of both circles
+        // Reverse the direction of both objects
         glm::vec2 newVelocity1 = -circle1.getVelocity();
         glm::vec2 newVelocity2 = -circle2.getVelocity();
         circle1.setVelocity(newVelocity1);
@@ -233,7 +226,8 @@ void circleToPointCollision(GLFWobject &circle, GLFWobject &point, bool DEBUG)
         // Circles have collided
         circle.addCollision();
         point.addCollision();
-        // Move each circle half the distance away from eachother
+        // Move each circle the half distance away
+        moveHalfDistance(distance, circle, point, center1, center2);
         
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -circle.getVelocity();
@@ -317,9 +311,10 @@ void pointToPointCollision(GLFWobject &point1, GLFWobject &point2, bool DEBUG)
         // Circles have collided
         point1.addCollision();
         point2.addCollision();
-        // Move each circle half the distance away from eachother
-        moveHalfDistance((distance - point1.getSize()) / 2.0f, point1);
-        moveHalfDistance((distance - point2.getSize()) / 2.0f, point2);
+
+        // Move each circle the half distance away
+        moveHalfDistance(distance, point1, point2, center1, center2);
+
         // Reverse the direction of both circles
         glm::vec2 newVelocity1 = -point1.getVelocity();
         glm::vec2 newVelocity2 = -point2.getVelocity();
@@ -530,9 +525,27 @@ void handlePointBoundary(GLFWobject &point, bool DEBUG)
     return;
 }
 
-void moveHalfDistance(float halfdistance, GLFWobject &object)
+void moveHalfDistance(float distance, GLFWobject &object1, GLFWobject &object2, glm::vec2 &center1, glm::vec2 &center2)
 {
-    object.setPosition(object.getPosition() + halfdistance);
+    // Calculate half distance to move objects
+        float halfDistance = abs((object1.getSize() + object2.getSize()) - distance) / 2.0;
+
+        // Calculate angle of intersection
+        float angle1 = object1.getTravelAngle();
+        float angle2 = object2.getTravelAngle();
+
+        // Calculate XY offsets to move by the distance
+        float X1Offset = -halfDistance * cos(angle1);
+        float Y1Offset = -halfDistance * sin(angle1);
+
+        float X2Offset = -halfDistance * cos(angle2);
+        float Y2Offset = -halfDistance * sin(angle2);
+
+        // Move each circle the half distance away
+        object1.setXPosition(center1[0] + X1Offset);
+        object1.setYPosition(center1[1] + Y1Offset);
+        object2.setXPosition(center2[0] + X2Offset);
+        object2.setYPosition(center2[1] + Y2Offset);
     return;
 }
 

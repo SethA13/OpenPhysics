@@ -81,11 +81,11 @@ void writeMapsToFile(std::unordered_map<int, std::unordered_multimap<std::string
                 outfile << std::endl;
             }
             outfile.close();
-            std::cerr << "File "<< outFile << " Saved."<<std::endl;
+            std::cerr << "File "<< prefix << outFile << " Saved."<<std::endl;
         }
         else
         {
-            std::cerr << "Failed to open file: " << outFile << std::endl;
+            std::cerr << "Failed to open file: " << prefix << outFile << std::endl;
         }
     }
 

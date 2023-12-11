@@ -22,6 +22,7 @@ float POINTSIZE = 0.005f;
  * 9.   SRS scenario 2
  * 10.  SRS scenario 3
  * 11.  SRS scenario 4
+ * 12.  Snake
 *****************************/
 
 std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::string> scenarioEntries, std::string &outFile);
@@ -46,7 +47,7 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
             objects.push_back(circle1);
 
             GLFWobject circle2      ('c',               //Shape 
-                                    0.2f,               //Size
+                                    0.1f,               //Size
                                     1000,               //NumSegments
                                     {0.3f, -0.1f},      //Starting Position -- {x,y}
                                     {0.002f, -0.003f},  //Starting Velocity -- {x,y}
@@ -280,6 +281,51 @@ std::vector<GLFWobject> scenarioPicker(std::string scenario, std::list<std::stri
                                     0,                  //Rotation -- in degrees 
                                     true);              //Gravity
             objects.push_back(point);
+        }
+        else if (scenario == "snake" || scenario == "12")
+        {
+            flag = false;
+            outFile = "circleDemo.ophy";
+            GLFWobject head         ('c',                //Shape 
+                                    0.09f,               //Size
+                                    1000,               //NumSegments
+                                    {0.85f, 0.5f},   //Starting Position -- {x,y}
+                                    {0.0f, 0.0f},     //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees
+                                    false);              //Gravity
+            objects.push_back(head);
+            GLFWobject segment1     ('c',                //Shape 
+                                    0.09f,               //Size
+                                    1000,               //NumSegments
+                                    {0.85f, (0.5 - 0.19)},   //Starting Position -- {x,y}
+                                    {0.0f, 0.0f},     //Starting Velocity -- {x,y}
+                                    0,                  //Rotation -- in degrees
+                                    false);              //Gravity
+            objects.push_back(segment1);
+            // GLFWobject segment2     ('c',                //Shape 
+            //                         0.09f,               //Size
+            //                         1000,               //NumSegments
+            //                         {-0.85f, -0.65f},   //Starting Position -- {x,y}
+            //                         {0.0f, 0.0f},     //Starting Velocity -- {x,y}
+            //                         0,                  //Rotation -- in degrees
+            //                         false);              //Gravity
+            // objects.push_back(segment2);
+            // GLFWobject segment3     ('c',                //Shape 
+            //                         0.09f,               //Size
+            //                         1000,               //NumSegments
+            //                         {-0.85f, -0.75f},   //Starting Position -- {x,y}
+            //                         {0.0f, 0.0f},     //Starting Velocity -- {x,y}
+            //                         0,                  //Rotation -- in degrees
+            //                         false);              //Gravity
+            // objects.push_back(segment3);
+            // GLFWobject tail         ('c',                //Shape 
+            //                         0.09f,               //Size
+            //                         1000,               //NumSegments
+            //                         {-0.85f, -0.85f},   //Starting Position -- {x,y}
+            //                         {0.0f, 0.0f},     //Starting Velocity -- {x,y}
+            //                         0,                  //Rotation -- in degrees
+            //                         false);              //Gravity
+            // objects.push_back(tail);
         }
         else
         {

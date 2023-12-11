@@ -37,7 +37,8 @@ int main(int argc, char** argv)
                                             "8. SRS scenario 1",
                                             "9. SRS scenario 2",
                                             "10. SRS scenario 3",
-											"11. SRS scenario 4"};
+											"11. SRS scenario 4",
+											"12. Snake"};
 
 	// check if there is more than one argument and use the second one
 	// (the first argument is the executable)
