@@ -1,0 +1,1 @@
+/nix/store/4cjqvbp1jbkps185wl8qnbjpf8bdy8j9-gcc-wrapper-13.2.0/bin/g++  -Wall -Wextra CMakeFiles/collisionTest.dir/tests/src/collisionTest.cpp.o -o tests/bin/collisionTest  -lGL -lGLU -lglut -lGLEW -lglfw 

@@ -1,0 +1,1 @@
+/nix/store/4cjqvbp1jbkps185wl8qnbjpf8bdy8j9-gcc-wrapper-13.2.0/bin/g++  -Wall -Wextra CMakeFiles/openPhysics.dir/src/main.cpp.o CMakeFiles/openPhysics.dir/src/objects/functions/point.cpp.o -o bin/openPhysics  -lGL -lGLU -lglut -lGLEW -lglfw 

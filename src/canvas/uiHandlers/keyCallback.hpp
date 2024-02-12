@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "../../objects\definitions\objectsMasterInclude.hpp"
+#include "../../objects/definitions/objectsMasterInclude.hpp"
 #include "../../../dependancies/glm/glm/glm.hpp"
 
 

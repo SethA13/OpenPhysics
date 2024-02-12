@@ -12,6 +12,7 @@
 #include "../uiHandlers/scenarioPicker.hpp"
 #include "../uiHandlers/billboard.hpp"
 
+
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -41,7 +42,7 @@ void GLFWCleanup(const std::vector<GLuint>& VAOs, const std::vector<GLuint>& VBO
 void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile, std::string &scenario, std::list<std::string> &scenarioEntries, bool DEBUG)
 {
     std::string outFile = "NULL";
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
         {
             std::cout << "Init called!" << std::endl;
         }
@@ -153,7 +154,7 @@ void glfwWindowInit(int WIDTH, int HEIGHT, char *windowName, std::string inFile,
     // Delete the shaders as they're linked to the program now and no longer needed
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "Shaders deleted!" << std::endl;
     }
@@ -209,7 +210,7 @@ std::vector<GLFWobject> createGLFWObjects(std::string &inFile, std::string &outF
         objects = scenarioPicker(scenario, scenarioEntries, outFile);
     }
     
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "Objects made, added to vector" << std::endl;
     }
@@ -224,7 +225,7 @@ std::vector<std::vector<GLfloat>> setupObjectVertices(std::vector<GLFWobject> &o
         allVertices.push_back(object.getVertices());
     }
     
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "Vertices added!" << std::endl;
     }
@@ -239,7 +240,7 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
                     bool DEBUG)
 {   
     // Bind and setup VAO and VBO for each object
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "Attempting to bind VAO/VBO..." << std::endl;
     }
@@ -256,14 +257,14 @@ void setupVAOandVBO(int NUMVERTOBJS, GLuint VAO[],
         glBindVertexArray(0);
         VAOs.push_back(VAO[i]);
         VBOs.push_back(VBO[i]);
-        if (DEBUG == TRUE)
+        if (DEBUG == true)
         {
             std::cout << "VAO/VBO " << i << " done!" << std::endl;
         }
             
     }
 
-    if (DEBUG == TRUE)
+    if (DEBUG == true)
     {
         std::cout << "VAO/VBO bound, added to vector!" << std::endl;
         std::cout << "Calling main loop..." << std::endl;
@@ -320,7 +321,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
                 std::cout << "Object " << i << " current position; {" << objects[i].getXPosition()
                 << "," << objects[i].getYPosition() << "}" << std::endl;
             }
-            if (DEBUG == TRUE)
+            if (DEBUG == true)
             {
                 std::cout << "Current object to check window bounds; " << objects[i].getShape() << std::endl;
             }
@@ -329,7 +330,7 @@ void glfwCollisionLoop(GLFWwindow* &window, GLuint &shaderProgram, const std::ve
 
             for (size_t j = i + 1; j < objects.size(); j++)
             {   
-                if (DEBUG == TRUE)
+                if (DEBUG == true)
                 {
                     std::cout << "Handling collisions for " << objects[i].getShape() << " and " << objects[j].getShape() << std::endl;
                 }

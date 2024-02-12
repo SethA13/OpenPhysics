@@ -1,0 +1,1 @@
+/nix/store/4cjqvbp1jbkps185wl8qnbjpf8bdy8j9-gcc-wrapper-13.2.0/bin/g++  -Wall -Wextra CMakeFiles/pointTest.dir/tests/src/pointTest.cpp.o -o tests/bin/pointTest  -lGL -lGLU -lglut -lGLEW -lglfw 

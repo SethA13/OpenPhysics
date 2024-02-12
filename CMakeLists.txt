@@ -20,9 +20,9 @@ include_directories(${PROJECTDIR}/dependancies/glm/glm)
 
 # Set libraries
 if(WIN32)
-	set(LIBRARIES opengl32 glu32 freeglut glew32 glfw3)
+	set(LIBRARIES opengl32 glu32 freeglut glew32 glfw)
 else()
-	set(LIBRARIES GL GLU glut GLEW glfw3)
+	set(LIBRARIES GL GLU glut GLEW glfw)
 endif()
 
 # Set source files
